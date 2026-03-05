@@ -2244,6 +2244,48 @@
             margin: 0 4px;
         }
 
+        .chat-color-btn {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: none;
+            padding: 0;
+            margin: 0 2px;
+        }
+
+        .chat-color-btn:hover {
+            border-color: rgba(255,255,255,0.6);
+            transform: scale(1.1);
+        }
+
+        .chat-color-custom-btn {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0 2px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff0000, #00ff00, #0000ff);
+        }
+
+        .chat-color-custom-btn input[type="color"] {
+            width: 150%;
+            height: 150%;
+            position: absolute;
+            top: -25%;
+            left: -25%;
+            cursor: pointer;
+            padding: 0;
+            border: none;
+            opacity: 0;
+        }
+
         /* 发送按钮 */
         /* 发送按钮：现代浅蓝/暗黑自适应 */
         .chat-session-inputarea-sendbtn {
@@ -2568,6 +2610,85 @@
 
         .header-badge.hidden {
             display: none;
+        }
+
+        /* Header 下拉菜单 */
+        .header-dropdown {
+            position: fixed;
+            top: 50px;
+            right: 50px;
+            z-index: 9999;
+        }
+
+        .header-dropdown.hidden {
+            display: none;
+        }
+
+        .header-dropdown-content {
+            background: #d2e7fc;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 100px;
+            max-width: 300px;
+            overflow: hidden;
+        }
+
+        .header-dropdown-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-dropdown-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .header-dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .header-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .header-dropdown-item:hover {
+            background: #f0f0f0;
+        }
+
+        .header-dropdown-item-name {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 暗色主题适配 */
+        .theme-dark .header-dropdown-content {
+            background: #2d3748;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-dark .header-dropdown-header {
+            background: #1a202c;
+            border-bottom: 1px solid #4a5568;
+            color: #e2e8f0;
+        }
+
+        .theme-dark .header-dropdown-item {
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .theme-dark .header-dropdown-item:hover {
+            background: #4a5568;
+        }
+
+        .theme-dark .header-dropdown-item-name {
+            color: #e2e8f0;
         }
     </style>
 
@@ -2998,12 +3119,14 @@
         /* 保存按钮 */
         .settings-btn-save {
             display: inline-block;
-            padding: 8px 8px;
+            padding: 8px 12px;
             background: transparent !important;
             transition: all 0.1s ease-in-out;
-            border: 0 solid black !important;
+            border: 1px solid #28a745 !important;
             border-radius: 2px;
             cursor: pointer;
+            font-size: 13px;
+            color: #28a745;
         }
 
         .settings-btn-save:first-of-type {
@@ -3011,11 +3134,12 @@
         }
 
         .settings-btn-save:hover {
-            background-color: rgba(0, 123, 255, 0.15) !important;
+            background-color: #28a745 !important;
+            color: white !important;
         }
 
         .settings-btn-save:active {
-            background-color: rgba(0, 123, 255, 0.4) !important;
+            background-color: #218838 !important;
         }
 
         /* 保存状态提示 */
@@ -3229,12 +3353,12 @@
         }
 
         .theme-dark .settings-btn-save {
-            border-color: #63b3ed !important;
-            color: #63b3ed;
+            border-color: #48bb78 !important;
+            color: #48bb78;
         }
 
         .theme-dark .settings-btn-save:hover {
-            background: #63b3ed !important;
+            background: #48bb78 !important;
             color: white !important;
         }
 
@@ -4096,6 +4220,7 @@
         /*}*/
 
         ul.tree-items {
+            max-height: 600px;
             overflow-y: auto;
             flex-grow: 1;
 
@@ -5186,18 +5311,44 @@
 
         .chat-session-inputarea-tip-editing {
             display: flex;
-            flex-direction: row;
-            align-items: end;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 123, 255, 0.05);
+            border: 1px solid rgba(0, 123, 255, 0.15);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            position: relative;
         }
 
         .chat-session-inputarea-tip-editing > span {
+            flex: 1;
             font-weight: bold;
             font-size: 14px;
             color: var(--c-thick-blue2);
+            line-height: 1.5;
         }
 
         .chat-session-inputarea-tip-editing > button {
-            padding: 0 4px;
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .chat-session-inputarea-tip-editing > button:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: #333;
         }
 
     </style>
@@ -6570,8 +6721,19 @@
     <button id="header-toolbar-btn-chatgpt" class="header-toolbar-btn" title="ChatGPT">
         <i class="bi bi-robot"></i>
     </button>
+    <button id="header-toolbar-btn-links" class="header-toolbar-btn" title="友链">
+        <i class="bi bi-link-45deg"></i>
+    </button>
     <button id="header-btn-more-right" class="menu-btn"><span class="user-avatar">未登录</span></button>
 </header>
+
+    <!-- 友链下拉菜单 -->
+    <div id="header-links-dropdown" class="header-dropdown hidden">
+        <div class="header-dropdown-content">
+            <div id="header-links-list" class="header-dropdown-list"></div>
+        </div>
+    </div>
+
 <main>
 
     <section id="login-panel" class="">
@@ -6816,6 +6978,50 @@
             });
         }
 
+        // 友链按钮 - 显示/隐藏下拉菜单
+        const headerLinksBtn = document.getElementById("header-toolbar-btn-links");
+        const headerLinksDropdown = document.getElementById("header-links-dropdown");
+        const headerLinksList = document.getElementById("header-links-list");
+
+        if (headerLinksBtn && headerLinksDropdown && headerLinksList) {
+            // 初始化友链列表
+            function initHeaderLinks() {
+                headerLinksList.innerHTML = "";
+                if (typeof HEADER_LINKS !== "undefined" && HEADER_LINKS && HEADER_LINKS.length > 0) {
+                    HEADER_LINKS.forEach(link => {
+                        const item = document.createElement("div");
+                        item.className = "header-dropdown-item";
+                        item.innerHTML = `<div class="header-dropdown-item-name">${link.name}</div>`;
+                        item.addEventListener("click", function() {
+                            window.open(link.url, "_blank");
+                            headerLinksDropdown.classList.add("hidden");
+                        });
+                        headerLinksList.appendChild(item);
+                    });
+                } else {
+                    const emptyItem = document.createElement("div");
+                    emptyItem.className = "header-dropdown-item";
+                    emptyItem.innerHTML = `<div class="header-dropdown-item-name" style="color: #999;">暂无友链</div>`;
+                    headerLinksList.appendChild(emptyItem);
+                }
+            }
+
+            // 点击按钮切换下拉菜单显示
+            headerLinksBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                initHeaderLinks();
+                headerLinksDropdown.classList.toggle("hidden");
+            });
+
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener("click", function(e) {
+                if (!headerLinksDropdown.contains(e.target) && e.target !== headerLinksBtn) {
+                    headerLinksDropdown.classList.add("hidden");
+                }
+            });
+        }
+
         // 下载任务按钮 - 触发下载任务对话框
         const headerDownloadBtn = document.getElementById("header-toolbar-btn-download");
         if (headerDownloadBtn && typeof floatball !== "undefined") {
@@ -6989,6 +7195,7 @@
     const appnames = null;
     const jumpto = null;
     const disallowed_upload = null;
+    const HEADER_LINKS = null; // 被服务端文本替换
     let logged_admin = false;
     let logged_user = null;
 
@@ -7224,10 +7431,27 @@
         return attr.shared ? "已共享" : "";
     }
 
-    function normalizeName(name) {
+    function normalizeName(name, isImage = false) {
         if (!name) return name;
         name = name.replace(/[/\\:*?"<>\r\n\t\f]|^[\s]+|[\s]+$/g, '');
         if (/^\.*$/.test(name)) return ""; // 不能全是点
+
+        // 只为图片添加短编号后缀，避免重名
+        if (isImage) {
+            const lastDotIndex = name.lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                const baseName = name.substring(0, lastDotIndex);
+                const ext = name.substring(lastDotIndex);
+                // 使用随机短编号（6位字符）
+                const shortId = Math.random().toString(36).substring(2, 8);
+                return `${baseName}_${shortId}${ext}`;
+            } else {
+                // 没有扩展名的图片
+                const shortId = Math.random().toString(36).substring(2, 8);
+                return `${name}_${shortId}`;
+            }
+        }
+
         return name;
     }
 
@@ -10450,7 +10674,7 @@
                     type: feedbackargs.msg.type,
 
                     file_attr: {
-                        "name": await encryptors.encrypt2base64(feedbackargs.msg.file.name),
+                        "name": await encryptors.encrypt2base64(feedbackargs.msg.file_name || feedbackargs.msg.file.name),
                         "name_encrypted": true,
                         "size": feedbackargs.msg.file.size,
                     },
@@ -12129,6 +12353,9 @@
         }
 
         class _chat extends _ {
+            // 全局静态变量：存储候选词面板的关闭状态（所有会话共享）
+            static hasUserClosedCandidatesPanel = false;
+
             constructor(client, panel, li) {
                 super(client, panel, li);
                 this.previous_activity_attr = {
@@ -12235,7 +12462,7 @@
     <!-- 编辑消息提示 -->
     <div class="chat-session-inputarea-tip-editing hidden">
         <span>编辑消息：</span>
-        <button>取消</button>
+        <button>✕</button>
     </div>
 
     <!-- 半屏候选词面板 -->
@@ -12279,8 +12506,18 @@
         <button class="chat-format-btn" data-format="underline" title="下划线 (Ctrl+U)"><i class="bi bi-type-underline"></i></button>
         <button class="chat-format-btn" data-format="strikethrough" title="删除线"><i class="bi bi-type-strikethrough"></i></button>
         <div class="chat-format-divider"></div>
+        <button class="chat-format-btn" data-format="color" title="颜色"><i class="bi bi-palette"></i></button>
+        <div class="chat-format-divider"></div>
         <button class="chat-format-btn" data-format="code" title="代码"><i class="bi bi-code"></i></button>
         <button class="chat-format-btn" data-format="quote" title="引用"><i class="bi bi-quote"></i></button>
+        <button class="chat-color-btn" data-color="#dc3545" style="background-color: #dc3545;" title="红色"></button>
+        <button class="chat-color-btn" data-color="#ffc107" style="background-color: #ffc107;" title="黄色"></button>
+        <button class="chat-color-btn" data-color="#28a745" style="background-color: #28a745;" title="绿色"></button>
+        <button class="chat-color-btn" data-color="#007bff" style="background-color: #007bff;" title="蓝色"></button>
+        <button class="chat-color-btn" data-color="#6f42c1" style="background-color: #6f42c1;" title="紫色"></button>
+        <button class="chat-color-custom-btn" id="chat-color-custom" title="自定义颜色">
+            <input type="color" id="chat-color-input" value="#000000">
+        </button>
     </div>
 
     <!-- flex 容器：输入框 -->
@@ -12752,13 +12989,8 @@
                 this.e_inputarea_candidates = this.container.querySelector(".chat-session-inputarea-candidates");
 
                 // 控制变量：是否在点击输入框时自动显示小候选词面板
-                // 从localStorage读取用户设置，默认启用
-                const autoShowSmallCandidatesPanel = localStorage.getItem('autoShowSmallCandidatesPanel') !== 'false';
-
-                // 保存用户设置到localStorage
-                const saveAutoShowSmallCandidatesPanel = (value) => {
-                    localStorage.setItem('autoShowSmallCandidatesPanel', value.toString());
-                };
+                // 使用内存变量存储，不持久化（刷新页面后重置）
+                let autoShowSmallCandidatesPanel = false;
 
                 // 公共短语 - 从后端获取
                 let commonPhrases = [];
@@ -12786,9 +13018,15 @@
 
                 // 初始化候选词数据（结构化数据用于半屏面板，扁平数据用于小面板）
                 fetchCandidates().then(data => {
+                    // 检查数据有效性，防止 null 或 undefined 导致错误
+                    if (!data || !Array.isArray(data)) {
+                        console.warn("获取候选词数据为空或格式不正确，使用空数组");
+                        data = [];
+                    }
+                    
                     commonPhrases = data; // 保存结构化数据
                     // 将结构化数据扁平化用于小候选词面板，并过滤掉空值
-                    commonPhrasesFlat = data.flatMap(group => group.items.filter(item => item != null));
+                    commonPhrasesFlat = data.flatMap(group => group.items ? group.items.filter(item => item != null) : []);
 
                     // 填充类别下拉菜单
                     const categorySelect = this.e_candidate_category;
@@ -12802,10 +13040,7 @@
                         }
                     });
 
-                    // 只有在启用自动显示时才在初始化时渲染小候选词面板
-                    if (autoShowSmallCandidatesPanel) {
-                        renderCandidates(commonPhrasesFlat);
-                    }
+                    // 初始化时不显示小候选词面板，只点击输入框时才显示
                 }).catch(error => {
                     console.error("初始化候选词失败:", error);
                 });
@@ -12846,7 +13081,8 @@
 
                     closeBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        saveAutoShowSmallCandidatesPanel(false);
+                        _chat.hasUserClosedCandidatesPanel = true;
+                        autoShowSmallCandidatesPanel = false;
                         container.classList.add('hidden');
                     });
 
@@ -12962,19 +13198,18 @@
 				
                 // 输入框 input 显示候选词
                 this.e_inputarea_textarea.addEventListener("input", async () => {
-                    // 检查实时状态
-                    const isEnabled = localStorage.getItem('autoShowSmallCandidatesPanel') !== 'false';
-                    if (!isEnabled) return;
+                    // 检查内存变量
+                    if (!autoShowSmallCandidatesPanel) return;
 
                     // 直接显示扁平化的候选词列表，不进行筛选
                     renderCandidates(commonPhrasesFlat);
                 });
 
-                // focus 显示候选词
+                // focus 显示候选词（点击输入框时显示）
                 this.e_inputarea_textarea.addEventListener("focus", () => {
-                    // 检查实时状态
-                    const isEnabled = localStorage.getItem('autoShowSmallCandidatesPanel') !== 'false';
-                    if (isEnabled) {
+                    // 如果用户没有关闭过面板，则显示
+                    if (!_chat.hasUserClosedCandidatesPanel) {
+                        autoShowSmallCandidatesPanel = true;
                         renderCandidates(commonPhrasesFlat.length > 0 ? commonPhrasesFlat : []);
                     }
                 });
@@ -14231,7 +14466,7 @@
             }
 
             start__send_msg_image(file) {
-                let name = normalizeName(file.name);
+                let name = normalizeName(file.name, true);
                 if (!name) return;
 
                 const img = new Image();
@@ -14239,8 +14474,8 @@
                 img.onload = () => {
                     URL.revokeObjectURL(url);
 
-                    // 检查文件大小，大于2MB则压缩
-                    if (file.size > 2 * 1024 * 1024) {
+                    // 检查文件大小，大于1MB则尝试压缩
+                    if (file.size > 1 * 1024 * 1024) {
                         console.log(`[图片上传] 原始大小: ${(file.size / 1024 / 1024).toFixed(2)}MB，开始压缩...`);
 
                         // 压缩图片
@@ -14274,8 +14509,8 @@
                                 return;
                             }
 
-                            // 如果压缩后仍然大于2MB，继续降低质量
-                            if (compressedBlob.size > 2 * 1024 * 1024) {
+                            // 如果压缩后仍然大于1MB，继续降低质量
+                            if (compressedBlob.size > 1 * 1024 * 1024) {
                                 const qualityStep = 0.1;
                                 let currentQuality = quality;
 
@@ -14289,7 +14524,7 @@
 
                                         console.log(`[图片上传] 质量${currentQuality.toFixed(1)}压缩后大小: ${(blob.size / 1024 / 1024).toFixed(2)}MB`);
 
-                                        if (blob.size <= 2 * 1024 * 1024 || currentQuality <= 0.1) {
+                                        if (blob.size <= 1 * 1024 * 1024 || currentQuality <= 0.1) {
                                             console.log(`[图片上传] 最终压缩大小: ${(blob.size / 1024 / 1024).toFixed(2)}MB`);
 
                                             // 创建新的File对象
@@ -14312,7 +14547,7 @@
                             }
                         }, 'image/jpeg', quality);
                     } else {
-                        console.log(`[图片上传] 文件小于2MB，不压缩`);
+                        console.log(`[图片上传] 文件小于1MB，不压缩`);
                         this._send_original_image(file, name, img);
                     }
                 };
@@ -14646,7 +14881,7 @@
                 msg.upload_task = t;
 
                 floatball.dialog.addTask(t);
-                t.set_name(normalizeName(msg.file.name));
+                t.set_name(msg.file_name || normalizeName(msg.file.name));
                 t.set_args({
                     msg,
                     ...this.current_contact_xxid(),
@@ -15701,8 +15936,8 @@
                         }
 
                         // 编辑
-                        if (this.sent_by_me && dashboardwrappers.ChatDashboardWrapper.message_type_checker.is_text(this.msgattr.type)) {
-                            const canEdit = this.msgattr.plain_data_text && Date.now() / 1000 - this.msgattr.sent_time <= seconds_of_minutes(10);
+                        if ((this.sent_by_me || logged_user.contact_any) && dashboardwrappers.ChatDashboardWrapper.message_type_checker.is_text(this.msgattr.type)) {
+                            const canEdit = this.msgattr.plain_data_text;
                             items.push({
                                 type: "button",
                                 text: "编辑",
@@ -16043,7 +16278,7 @@
 
                             case "edit":
                                 // 编辑逻辑
-                                if (this.sent_by_me) {
+                                if (this.sent_by_me || logged_user.contact_any) {
                                     this.contentpage.edit_msg(this.msgattr);
                                 } else {
                                     alert("只能编辑自己的消息");
@@ -16717,9 +16952,9 @@
 
                                     encryptors.decrypt2string(this.msgattr.file_attr.name)
                                         .then(result => {
-                                            // 检查文件大小，小于2MB自动下载显示
+                                            // 检查文件大小，小于1MB自动下载显示
                                             const fileSize = this.msgattr.file_attr.size || 0;
-                                            if (fileSize > 0 && fileSize <= 2 * 1024 * 1024) {
+                                            if (fileSize > 0 && fileSize <= 1 * 1024 * 1024) {
                                                 set_htmlContent_if_different(this.e_mcr_span, `<i class="bi bi-image"></i> 图片 ${result} 加载中...`);
                                                 this.msgattr.plain_file_name = result;
                                                 // 自动触发下载
@@ -16736,11 +16971,11 @@
                                         });
 
                                 } else {
-                                    // 检查文件大小，小于2MB自动下载显示
+                                    // 检查文件大小，小于1MB自动下载显示
                                     const fileSize = this.msgattr.file_attr.size || 0;
                                     this.msgattr.plain_file_name = this.msgattr.file_attr.name;
 
-                                    if (fileSize > 0 && fileSize <= 2 * 1024 * 1024) {
+                                    if (fileSize > 0 && fileSize <= 1 * 1024 * 1024) {
                                         this.e_mcr_span.classList.add("mcr-status");
                                         this.e_mcr_span.classList.add("status-download");
                                         set_htmlContent_if_different(this.e_mcr_span,
@@ -17405,6 +17640,39 @@
                     this.e_format_toolbar.appendChild(btn);
                 });
 
+                // 添加预设颜色按钮
+                const presetColors = [
+                    '#000000', '#dc3545', '#ffc107', '#28a745', '#007bff'
+                ];
+
+                presetColors.forEach(color => {
+                    const colorBtn = document.createElement('button');
+                    colorBtn.className = 'chat-color-btn';
+                    colorBtn.dataset.color = color;
+                    colorBtn.style.backgroundColor = color;
+                    colorBtn.title = color;
+                    colorBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.apply_color(color);
+                    });
+                    this.e_format_toolbar.appendChild(colorBtn);
+                });
+
+                // 添加自定义颜色按钮
+                const customColorBtn = document.createElement('button');
+                customColorBtn.className = 'chat-color-custom-btn';
+                customColorBtn.id = 'chat-color-custom';
+                customColorBtn.title = '自定义颜色';
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.id = 'chat-color-input';
+                colorInput.value = '#000000';
+                colorInput.addEventListener('change', (e) => {
+                    this.apply_color(e.target.value);
+                });
+                customColorBtn.appendChild(colorInput);
+                this.e_format_toolbar.appendChild(customColorBtn);
+
                 // 添加到页面
                 document.body.appendChild(this.e_format_toolbar);
 
@@ -17456,14 +17724,17 @@
                 const charWidth = 10; // 假设字符宽度
 
                 const top = rect.top + (line - 1) * lineHeight - 40;
-                const toolbarWidth = this.e_format_toolbar.offsetWidth || 200; // 工具条宽度
+                
+                // 先显示工具条以获取实际宽度
+                this.e_format_toolbar.classList.remove('hidden');
+                const toolbarWidth = this.e_format_toolbar.offsetWidth;
                 const viewportWidth = window.innerWidth; // 视口宽度
 
                 // 计算初始 left 位置
                 let left = rect.left + col * charWidth;
 
                 // 检查右边界，如果超出视口则向左偏移
-                if (left + toolbarWidth > viewportWidth) {
+                if (left + toolbarWidth > viewportWidth - 10) {
                     left = viewportWidth - toolbarWidth - 10; // 10px 间距
                 }
 
@@ -17474,7 +17745,6 @@
 
                 this.e_format_toolbar.style.top = `${top}px`;
                 this.e_format_toolbar.style.left = `${left}px`;
-                this.e_format_toolbar.classList.remove('hidden');
             }
 
             /*
@@ -17518,6 +17788,34 @@
                         formattedText = `> ${selectedText}`;
                         break;
                 }
+
+                // 替换选中的文本
+                textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+
+                // 更新选择范围
+                textarea.focus();
+                textarea.setSelectionRange(start, start + formattedText.length);
+
+                // 触发 input 事件以更新草稿
+                textarea.dispatchEvent(new Event('input'));
+
+                // 隐藏工具条
+                this.hide_format_toolbar();
+            }
+
+            /*
+            * 应用颜色格式
+            */
+            apply_color(color) {
+                const textarea = this.e_inputarea_textarea;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const selectedText = textarea.value.substring(start, end);
+
+                if (!selectedText) return;
+
+                // 使用 HTML 样式包裹文字
+                const formattedText = `<span style="color: ${color}">${selectedText}</span>`;
 
                 // 替换选中的文本
                 textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
@@ -18408,10 +18706,20 @@
                         await new Promise((resolve, reject) => {
                             const script = document.createElement('script');
                             script.src = jsZipUrl;
-                            script.onload = resolve;
-                            script.onerror = reject;
+                            script.onload = () => {
+                                console.log('JSZip 加载成功');
+                                resolve();
+                            };
+                            script.onerror = (error) => {
+                                console.error('JSZip 加载失败:', error);
+                                reject(new Error('JSZip 库加载失败，请检查网络连接'));
+                            };
                             document.head.appendChild(script);
                         });
+                    }
+
+                    if (typeof JSZip === 'undefined') {
+                        throw new Error('JSZip 库未正确加载');
                     }
 
                     const zip = new JSZip();
@@ -18430,7 +18738,7 @@
                     saveFile_from_uint8array(zipBlob, zipFileName);
                 } catch (error) {
                     console.error('导出失败:', error);
-                    MessageMark.report('导出失败，请检查网络连接');
+                    MessageMark.report(`导出失败：${error.message || '未知错误'}，将仅导出 MD 文件`);
                     // 降级：只导出MD文件
                     saveFile_from_text(mdContent, mdFileName);
                 }
@@ -19109,8 +19417,6 @@
                             msg.msgobj.contentpage.revoke_msg(msg);
                         }
                     });
-                    // 撤回后退出批量选择模式
-                    this.toggle_batch_select_mode();
                 });
             }
 
@@ -19139,8 +19445,6 @@
                             msg.msgobj.contentpage.revoke_msg(msg);
                         }
                     });
-                    // 删除后退出批量选择模式
-                    this.toggle_batch_select_mode();
                 });
             }
 
@@ -19312,7 +19616,6 @@
                     super.open_page();
                     let html = `
 <div class="activity-rect">
-<button class="btn-back-to-left-aside">⮌</button>
 <div class="activity-filter">
     <label>范围<select></select></label>
     <label>日期<input type="date"></label>
@@ -19325,11 +19628,6 @@
 `;
                     this.container.insertAdjacentHTML("beforeend", html);
                     this.activity_rect = this.container.querySelector(":scope div.activity-rect");
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
 
                     this.activity_filter = this.activity_rect.querySelector(":scope div.activity-filter");
                     this.activity_filter_group_selector = this.activity_filter.querySelector(":scope select");
@@ -19459,19 +19757,9 @@
                 open_page() {
                     super.open_page();
 
-                    let html = `
-<button class="btn-back-to-left-aside">⮌</button>
-`;
-                    this.container.insertAdjacentHTML("beforeend", html);
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
-
                     // 添加工具栏
                     this.selected_user_ids = new Set();
-                    html = `
+                    let html = `
 <div class="settings-toolbar">
     <button class="settings-btn-delete" disabled>删除</button>
     <span class="settings-delete-status"></span>
@@ -19539,9 +19827,13 @@
                 }
 
                 _attrs2columns(attr) {
-                    const left_for_day = !form_field_checker.ffc_int(attr.last_login_time) ? true : attr.last_login_time < (Date.now() / 1000) - seconds_of_one_day;
+                    const now = Date.now() / 1000;
+                    const left_for_day = !form_field_checker.ffc_int(attr.last_login_time) ? true : attr.last_login_time < now - seconds_of_one_day;
                     let text_last_login_time = format_timestamp_utc8(attr.last_login_time);
-                    if (left_for_day) text_last_login_time += "（>1天）";
+                    if (left_for_day) {
+                        const days_offline = Math.floor((now - attr.last_login_time) / seconds_of_one_day);
+                        text_last_login_time += `（${days_offline}天前）`;
+                    }
                     return [
                         {text: "", checkbox: true, value: attr.uid,},
                         {text: this.tree1.tree_items.length + 1, selectable: false,},
@@ -20010,19 +20302,9 @@
                 open_page() {
                     super.open_page();
 
-                    let html = `
-<button class="btn-back-to-left-aside">⮌</button>
-`;
-                    this.container.insertAdjacentHTML("beforeend", html);
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
-
                     // 添加工具栏
                     this.selected_group_ids = new Set();
-                    html = `
+                    let html = `
 <div class="settings-toolbar">
     <button class="settings-btn-delete" disabled>删除</button>
     <span class="settings-delete-status"></span>
@@ -20451,16 +20733,6 @@
                 open_page() {
                     super.open_page();
 
-                    let html = `
-<button class="btn-back-to-left-aside">⮌</button>
-`;
-                    this.container.insertAdjacentHTML("beforeend", html);
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
-
                     const tree_headers = [
                         {text: "", width: 40,},
                         {text: "用户", width: 120,},
@@ -20531,8 +20803,6 @@
                     let html = `
 <div class="service-status-rect">
 
-<button class="btn-back-to-left-aside">⮌</button>
-
 <div class="service-status-row service-status-row1">
 <span>服务版本：v${checkin_version}</>
 </div>
@@ -20541,11 +20811,6 @@
 `;
                     this.container.insertAdjacentHTML("beforeend", html);
                     this.service_status_rect = this.container.querySelector(":scope div.service-status-rect");
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
 
                 }
 
@@ -20565,8 +20830,6 @@
                     let html = `
 <div class="backup-rect">
 
-<button class="btn-back-to-left-aside">⮌</button>
-
 <div class="backup-row backup-row1">
 <button class="backup-btn-clear-drive">清空网盘</button>
 <button class="backup-btn-reset">重置服务</button>
@@ -20584,11 +20847,6 @@
 `;
                     this.container.insertAdjacentHTML("beforeend", html);
                     this.backup_rect = this.container.querySelector(":scope div.backup-rect");
-
-                    this.e_btn_back_to_left_aside = this.container.querySelector(":scope button.btn-back-to-left-aside");
-                    this.e_btn_back_to_left_aside.addEventListener("click", (event) => {
-                        this.client.close_content_page();
-                    });
 
                     this.e_btn_clear_drive = this.backup_rect.querySelector(":scope button.backup-btn-clear-drive");
                     this.e_btn_clear_drive.addEventListener("click", (event) => {
@@ -22649,6 +22907,7 @@
             this.header_btn_more_left.classList.add("hidden");
             this.header_toolbar_btn_download = document.getElementById("header-toolbar-btn-download"); // 下载任务按钮
             this.header_toolbar_btn_chatgpt = document.getElementById("header-toolbar-btn-chatgpt"); // ChatGPT按钮
+            this.header_toolbar_btn_links = document.getElementById("header-toolbar-btn-links"); // 友链按钮
             this.header_btn_more_right = document.getElementById("header-btn-more-right"); // 右侧
             this.header_btn_more_right.addEventListener("click", (event) => {
                 const rect = event.target.getBoundingClientRect();
@@ -23097,15 +23356,17 @@
                 this._switch_panel_to_apps();
             } else {
                 this.login_panel.classList.add("active");
-                // 登录页面隐藏下载和ChatGPT按钮
+                // 登录页面隐藏下载、ChatGPT和友链按钮
                 this.header_toolbar_btn_download.classList.add("hidden");
                 this.header_toolbar_btn_chatgpt.classList.add("hidden");
+                this.header_toolbar_btn_links.classList.add("hidden");
             }
 
             if (btn) {
-                // 显示下载和ChatGPT按钮
+                // 显示下载、ChatGPT和友链按钮
                 this.header_toolbar_btn_download.classList.remove("hidden");
                 this.header_toolbar_btn_chatgpt.classList.remove("hidden");
+                this.header_toolbar_btn_links.classList.remove("hidden");
                 const avatar = this.header_btn_more_right.querySelector('.user-avatar');
                 if (avatar) {
                     // 显示完整用户名
@@ -23129,9 +23390,10 @@
         }
 
         _switch_panel_to_apps() {
-            // 显示下载和ChatGPT按钮
+            // 显示下载、ChatGPT和友链按钮
             this.header_toolbar_btn_download.classList.remove("hidden");
             this.header_toolbar_btn_chatgpt.classList.remove("hidden");
+            this.header_toolbar_btn_links.classList.remove("hidden");
         }
 
         _switch_panel_to_mail() {
@@ -23201,9 +23463,10 @@
             if (jumpto.backend_panel) {
                 this.login_panel.classList.remove("active");
                 this.backend_panel.classList.add("active");
-                // 后台页面隐藏下载和ChatGPT按钮
+                // 后台页面隐藏下载和ChatGPT按钮，但显示友链按钮
                 this.header_toolbar_btn_download.classList.add("hidden");
                 this.header_toolbar_btn_chatgpt.classList.add("hidden");
+                this.header_toolbar_btn_links.classList.remove("hidden");
                 const avatar = this.header_btn_more_right.querySelector('.user-avatar');
                 if (avatar) {
                     avatar.textContent = '管理员';
@@ -23349,9 +23612,10 @@
             checkin.header_btn_more_left.classList.add("hidden");
             // checkin.header_btn_more_right.classList.add("hidden");
 
-            // 管理员登录页面隐藏下载和ChatGPT按钮
+            // 管理员登录页面隐藏下载、ChatGPT和友链按钮
             checkin.header_toolbar_btn_download.classList.add("hidden");
             checkin.header_toolbar_btn_chatgpt.classList.add("hidden");
+            checkin.header_toolbar_btn_links.classList.add("hidden");
 
             checkin.login_tip_admin.classList.remove("hidden");
             checkin.login_input_account_label.classList.add("hidden");
