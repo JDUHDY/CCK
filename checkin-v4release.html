@@ -126,9 +126,7 @@
             padding: 0;
         }
 
-        /* ================= 附件列表 ================= */
-        /* ===== 在线成员 & 附件列表字体增强 ===== */
-        /* ===== 在线成员 + 附件：整体浅蓝底 ===== */
+        /* ===== 附件列表 ===== */
         .e_msgflow_mark_onlineusers {
             background-color: rgba(0, 123, 255, 0.06);  /* 浅蓝主题底色 */
         }
@@ -271,7 +269,7 @@
             white-space: nowrap;
         }
 
-        /* ================= 选择消息出现菜单 ================= */
+        /* ===== 选择消息出现菜单 ===== */
 
         /* 选中高亮 */
         .chat-message-content-container.selected {
@@ -327,7 +325,7 @@
             outline: none;
         }
 
-        /* ================= 批量选择模式样式 ================= */
+        /* ===== 批量选择模式样式 ===== */
 
         /* 批量选择模式下的消息容器 */
         .chat-message.batch-select-mode {
@@ -429,7 +427,7 @@
             border-radius: 12px;
         }
 
-         /* ================= 消息冒泡 - 顶部右上角 ================= */
+         /* ===== 消息冒泡 - 顶部右上角 ===== */
         #chat-toast-container {
             position: fixed;
             top: 20px;
@@ -2287,7 +2285,6 @@
         }
 
         /* 发送按钮 */
-        /* 发送按钮：现代浅蓝/暗黑自适应 */
         .chat-session-inputarea-sendbtn {
             flex-shrink: 0;
             min-width: 100px;
@@ -3472,13 +3469,17 @@
             inset: 0; /* 等价于 top:0; right:0; bottom:0; left:0; */
             z-index: 9;
 
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
+            /* 移除 backdrop-filter 以提高性能，改用更轻量的半透明背景 */
+            background: rgba(255, 255, 255, 0.5);
+            /* backdrop-filter: blur(2px); */
+            /* -webkit-backdrop-filter: blur(2px); */
+
+            /* 添加 will-change 优化渲染性能 */
+            will-change: opacity;
         }
 
         .theme-dark div.blur-mark {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
         }
 
     </style>
@@ -3531,12 +3532,16 @@
         div#message-mark-rect {
             background: white;
             padding: 24px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+            /* 简化阴影效果，使用更轻量的 box-shadow */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             border-radius: 4px;
             display: flex;
             flex-direction: column;
             justify-content: left;
             gap: 12px;
+
+            /* 添加 will-change 优化渲染性能 */
+            will-change: transform, opacity;
 
             /*position: absolute;*/
             /*flex-wrap: wrap;*/
@@ -4166,6 +4171,8 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         /* 顶级节点样式 */
@@ -4220,7 +4227,6 @@
         /*}*/
 
         ul.tree-items {
-            max-height: 600px;
             overflow-y: auto;
             flex-grow: 1;
 
@@ -4547,6 +4553,8 @@
             flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .activity-filter {
@@ -4569,6 +4577,8 @@
             flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
+            overflow: hidden;
         }
 
     </style>
@@ -6696,8 +6706,129 @@
 
     </style>
 
+    <!-- 网络错误通知条样式 -->
+    <style>
+        #network-notification-bar {
+            // position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-bottom: 2px solid #f39c12;
+            padding: 6px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+            will-change: transform;
+        }
+
+        #network-notification-bar.show {
+            transform: translateY(0);
+        }
+
+        #network-notification-bar.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-bottom-color: #dc3545;
+        }
+
+        #network-notification-bar.warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-bottom-color: #f39c12;
+        }
+
+        #network-notification-bar.info {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            border-bottom-color: #17a2b8;
+        }
+
+        #network-notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        #network-notification-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        #network-notification-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #network-notification-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        #network-notification-close:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .theme-dark #network-notification-bar.error {
+            background: linear-gradient(135deg, #721c24 0%, #842029 100%);
+            border-bottom-color: #a61e1e;
+        }
+
+        .theme-dark #network-notification-bar.warning {
+            background: linear-gradient(135deg, #856404 0%, #997404 100%);
+            border-bottom-color: #bfa15f;
+        }
+
+        .theme-dark #network-notification-bar.info {
+            background: linear-gradient(135deg, #0c5460 0%, #0e6674 100%);
+            border-bottom-color: #117a8b;
+        }
+
+        .theme-dark #network-notification-text {
+            color: #e0e0e0;
+        }
+
+        .theme-dark #network-notification-close {
+            color: #ccc;
+        }
+
+        .theme-dark #network-notification-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+    </style>
+
 </head>
 <body class="">
+
+<!-- 网络错误通知条 -->
+<div id="network-notification-bar">
+    <div id="network-notification-content">
+        <span id="network-notification-icon">⚠️</span>
+        <span id="network-notification-text">网络连接异常</span>
+    </div>
+    <button id="network-notification-close" title="关闭">×</button>
+</div>
 
 <!---->
 
@@ -6717,9 +6848,6 @@
     <button id="header-toolbar-btn-download" class="header-toolbar-btn" title="下载任务">
         <i class="bi bi-cloud-download"></i>
         <span id="header-download-badge" class="header-badge hidden"></span>
-    </button>
-    <button id="header-toolbar-btn-chatgpt" class="header-toolbar-btn" title="ChatGPT">
-        <i class="bi bi-robot"></i>
     </button>
     <button id="header-toolbar-btn-links" class="header-toolbar-btn" title="友链">
         <i class="bi bi-link-45deg"></i>
@@ -6966,17 +7094,6 @@
 
     // Header 工具栏按钮事件绑定
     document.addEventListener("DOMContentLoaded", function() {
-        // ChatGPT按钮 - 打开ChatGPT链接
-        const headerChatGPTBtn = document.getElementById("header-toolbar-btn-chatgpt");
-        if (headerChatGPTBtn) {
-            headerChatGPTBtn.addEventListener("click", function(e) {
-                e.preventDefault();
-                // 添加确认弹窗
-                MessageMark.confirm("确定要跳转到 ChatGPT 吗？", null, null, () => {
-                    window.open("https://chat.openai.com/", "_blank");
-                });
-            });
-        }
 
         // 友链按钮 - 显示/隐藏下拉菜单
         const headerLinksBtn = document.getElementById("header-toolbar-btn-links");
@@ -7196,6 +7313,7 @@
     const jumpto = null;
     const disallowed_upload = null;
     const HEADER_LINKS = null; // 被服务端文本替换
+    const chat_settings = null; // 被服务端文本替换
     let logged_admin = false;
     let logged_user = null;
 
@@ -7875,6 +7993,124 @@
 
 
     /*
+    * 网络通知条
+    * */
+    class NetworkNotification {
+        constructor() {
+            this.bar = document.getElementById('network-notification-bar');
+            this.text = document.getElementById('network-notification-text');
+            this.icon = document.getElementById('network-notification-icon');
+            this.closeBtn = document.getElementById('network-notification-close');
+            this.hideTimeout = null;
+            this.errorCount = 0;
+            this.maxSilentRetries = 3; // 静默重试次数
+            this.showAfter = 5000; // 显示5秒后自动隐藏
+
+            this.init();
+        }
+
+        init() {
+            // 关闭按钮事件
+            this.closeBtn.addEventListener('click', () => {
+                this.hide();
+                this.errorCount = 0; // 重置计数器
+            });
+
+            // 点击通知条也可以关闭
+            this.bar.addEventListener('click', (e) => {
+                if (e.target !== this.closeBtn) {
+                    this.hide();
+                    this.errorCount = 0;
+                }
+            });
+        }
+
+        // 显示通知
+        show(message, type = 'warning', duration = this.showAfter) {
+            console.log(`[网络通知] 显示通知: ${message} (类型: ${type})`);
+
+            // 清除之前的隐藏定时器
+            if (this.hideTimeout) {
+                clearTimeout(this.hideTimeout);
+            }
+
+            // 设置样式
+            this.bar.className = ''; // 清除所有类
+            this.bar.classList.add(type);
+            this.bar.classList.add('show');
+
+            // 设置图标
+            const icons = {
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️',
+                success: '✅'
+            };
+            this.icon.textContent = icons[type] || icons.warning;
+
+            // 设置文本
+            this.text.textContent = message;
+
+            // 自动隐藏
+            if (duration > 0) {
+                this.hideTimeout = setTimeout(() => {
+                    this.hide();
+                }, duration);
+            }
+        }
+
+        // 隐藏通知
+        hide() {
+            if (this.hideTimeout) {
+                clearTimeout(this.hideTimeout);
+                this.hideTimeout = null;
+            }
+            this.bar.classList.remove('show');
+        }
+
+        // 处理网络错误
+        handleNetworkError(error) {
+            // 打印详细日志到控制台
+            console.error(`[网络错误] ${new Date().toLocaleTimeString()}`, {
+                message: error.message,
+                stack: error.stack,
+                auto_retry: error.auto_retry
+            });
+
+            // 如果是自动重试的错误，增加计数器但不显示通知
+            if (error.auto_retry) {
+                this.errorCount++;
+                console.log(`[网络重试] 静默重试中 (${this.errorCount}/${this.maxSilentRetries})`);
+
+                // 只有达到最大静默重试次数才显示通知
+                if (this.errorCount >= this.maxSilentRetries) {
+                    this.show(`网络连接异常，正在尝试重新连接... (${this.errorCount}次重试)`, 'warning', 8000);
+                }
+            } else {
+                // 非自动重试错误，直接显示通知
+                this.show(`网络错误：${error.message}`, 'error', 10000);
+            }
+        }
+
+        // 重置错误计数器
+        resetErrorCount() {
+            this.errorCount = 0;
+            console.log('[网络通知] 错误计数器已重置');
+        }
+
+        // 显示成功消息
+        showSuccess(message = '网络连接已恢复') {
+            console.log(`[网络通知] ${message}`);
+            this.show(message, 'success', 3000);
+            this.resetErrorCount();
+        }
+    }
+
+    // 创建全局实例
+    const networkNotification = new NetworkNotification();
+
+
+    /*
     * 遮罩
     * */
     class BlurMark {
@@ -7959,6 +8195,15 @@
             yellow: "#656457",
         }
 
+        // 网络错误节流控制
+        static network_error_throttle = {
+            last_error_time: 0,
+            throttle_interval: 3000, // 3秒内只显示一次网络错误
+            pending_timeout: null,
+            current_instance: null,
+            error_queue: []
+        }
+
         constructor(element, message, btn_flags, color, close_callback, confirm_callback) {
             super(element)
             this.message = message;
@@ -8008,6 +8253,15 @@
         }
 
         static report(error, element = null, close_callback = null, confirm_callback = null, color = MessageMark.colors.red,) {
+            // 如果是自动重试的错误，交给通知条处理
+            if (error instanceof Error && error.auto_retry) {
+                if (networkNotification) {
+                    networkNotification.handleNetworkError(error);
+                }
+                if (close_callback) close_callback();
+                return null;
+            }
+
             if (error instanceof Error) {// 某些异常，重新登录
                 const origin_close_callback = close_callback;
                 close_callback = () => {
@@ -8015,9 +8269,36 @@
                     checkin.check_exception_to_reload(error);
                 };
             }
+
+            // 检查是否是网络错误，如果是则使用通知条而不是弹窗
+            const is_network_error = error instanceof Error && (
+                error.message.includes('NetworkError') ||
+                error.message.includes('Failed to fetch') ||
+                error.message.includes('Websocket连接异常') ||
+                error.message.includes('fetch')
+            );
+
+            if (is_network_error) {
+                // 将网络错误重定向到通知条
+                if (networkNotification) {
+                    networkNotification.handleNetworkError(error);
+                }
+                if (close_callback) close_callback();
+                return null;
+            }
+
+            // 非网络错误，正常显示弹窗
             const mm = new MessageMark(!element ? document.body : element, error instanceof Error ? `报错：${error}` : error, MessageMark.btnFlags.close, color, close_callback, confirm_callback);
             mm.show();
             return mm;
+        }
+
+        // 重写 remove 方法，清理节流状态
+        remove() {
+            super.remove();
+            if (MessageMark.network_error_throttle.current_instance === this) {
+                MessageMark.network_error_throttle.current_instance = null;
+            }
         }
 
         static confirm(message, element = null, close_callback = null, confirm_callback = null, color = MessageMark.colors.yellow,) {
@@ -12510,6 +12791,7 @@
         <div class="chat-format-divider"></div>
         <button class="chat-format-btn" data-format="code" title="代码"><i class="bi bi-code"></i></button>
         <button class="chat-format-btn" data-format="quote" title="引用"><i class="bi bi-quote"></i></button>
+        <button class="chat-format-btn" data-format="link" title="链接"><i class="bi bi-link"></i></button>
         <button class="chat-color-btn" data-color="#dc3545" style="background-color: #dc3545;" title="红色"></button>
         <button class="chat-color-btn" data-color="#ffc107" style="background-color: #ffc107;" title="黄色"></button>
         <button class="chat-color-btn" data-color="#28a745" style="background-color: #28a745;" title="绿色"></button>
@@ -12575,7 +12857,7 @@
             <div class="chat-writeboard-actions-right">
                 <button class="chat-writeboard-undo"><i class="bi bi-arrow-counterclockwise"></i> 撤销</button>
                 <button class="chat-writeboard-redo"><i class="bi bi-arrow-clockwise"></i> 恢复</button>
-                <button class="chat-writeboard-tool-toggle"><i class="bi bi-pencil"></i> 写字</button>
+                <button class="chat-writeboard-tool-toggle"><i class="bi bi-eraser"></i> 橡皮</button>
                 <button class="chat-writeboard-clear"><i class="bi bi-trash"></i> 清空</button>
                 <button class="chat-writeboard-confirm"><i class="bi bi-check-lg"></i> 确定</button>
             </div>
@@ -12910,7 +13192,6 @@
 
                                 });
 
-
 				// =============================
 				// 半屏候选词：DOM 引用
 				// =============================
@@ -12930,7 +13211,6 @@
 					".chat-candidate-panel-close"
 				);
 
-
 				// 半屏候选词 DOM
 				this.e_candidate_panel_body = this.container.querySelector(".chat-candidate-panel-body");
 				this.e_candidate_prev = this.container.querySelector(".chat-candidate-panel-prev");
@@ -12945,9 +13225,6 @@
 					this.e_candidate_prev.disabled = body.scrollTop <= 0;
 					this.e_candidate_next.disabled = body.scrollTop + body.clientHeight >= body.scrollHeight;
 				};
-
-				
-
 
 				// 翻页按钮
 				const scrollStep = 150;
@@ -12977,8 +13254,6 @@
                 this.e_inputarea_textarea.addEventListener('blur', () => {
                     floatball.setOpacity(1);
                 });
-
-
 
                  // =============================
                 // 新增：候选词逻辑
@@ -13224,7 +13499,6 @@
                     }, 150);
                 });
 
-
 				// =============================
 				// 半屏候选词：打开 / 关闭
 				// =============================
@@ -13309,8 +13583,6 @@
                     this.e_inputarea_textarea.focus();
                 });
 
-
-
                 // =============================
                 // 横向滚动按钮
                 // =============================
@@ -13323,8 +13595,6 @@
                 if (nextBtn) nextBtn.addEventListener("click", () => {
                     this.e_inputarea_candidates.scrollBy({ left: 100, behavior: "smooth" });
                 });
-
-
 
                 // 回车发送（原逻辑，保留）
                 this.e_inputarea_textarea.addEventListener('keydown', (e) => {
@@ -13794,14 +14064,14 @@
                     this.e_writeboard_tool_toggle.addEventListener("click", () => {
                         if (this.write_tool_type === 'pen') {
                             this.write_tool_type = 'eraser';
-                            this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-eraser"></i> 橡皮';
+                            this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-pencil"></i> 写字';
                             this.e_writeboard_tool_toggle.classList.add('eraser');
                             this.write_ctx.globalCompositeOperation = 'destination-out';
                             cursor.classList.remove('pen');
                             cursor.classList.add('eraser');
                         } else {
                             this.write_tool_type = 'pen';
-                            this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-pencil"></i> 写字';
+                            this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-eraser"></i> 橡皮';
                             this.e_writeboard_tool_toggle.classList.remove('eraser');
                             this.write_ctx.globalCompositeOperation = 'source-over';
                             cursor.classList.remove('eraser');
@@ -13960,8 +14230,6 @@
                     this.init_writeboard();
                 });
 
-
-
                 setTimeout(() => {
                     check_scroll_to_end();
                 }, 400);
@@ -14104,8 +14372,6 @@
                 } else if (contact_type === subviews.Chat.receiver_type.user) {
                     body.uid = xxid;
                 }
-
-                
 
                 try {
                     const response = await net_fetcher.nf_post_json(`${top_level_path}/chat/api/get_message_replies`, body);
@@ -14465,18 +14731,68 @@
                 }
             }
 
-            start__send_msg_image(file) {
+            // 检测 Canvas 是否可用（用于检测 Firefox 隐私扩展是否禁用了 Canvas 权限）
+            async checkCanvasAvailable() {
+                const testCanvas = document.createElement('canvas');
+                testCanvas.width = 1;
+                testCanvas.height = 1;
+                const ctx = testCanvas.getContext('2d');
+                
+                if (!ctx) {
+                    console.warn('[图片上传] Canvas 上下文获取失败');
+                    return false;
+                }
+                
+                // 绘制一个 1x1 红色像素
+                ctx.fillStyle = '#FF0000';
+                ctx.fillRect(0, 0, 1, 1);
+                
+                return new Promise((resolve) => {
+                    testCanvas.toBlob((blob) => {
+                        if (!blob) {
+                            console.warn('[图片上传] Canvas toBlob 返回空值');
+                            resolve(false);
+                            return;
+                        }
+                        
+                        // 验证数据：1x1 红色像素的 JPEG 大小应该在合理范围内
+                        // 正常情况下，1x1 的 JPEG 大小通常在 100-500 字节之间
+                        // 如果被随机化（Firefox 隐私扩展），大小会异常（通常 > 1KB）
+                        const isNormalSize = blob.size > 0 && blob.size < 1000;
+                        
+                        if (!isNormalSize) {
+                            console.warn(`[图片上传] Canvas 数据异常（大小: ${blob.size} 字节），可能被隐私扩展禁用`);
+                        }
+                        
+                        resolve(isNormalSize);
+                    }, 'image/jpeg', 0.8);
+                });
+            }
+
+            async start__send_msg_image(file) {
                 let name = normalizeName(file.name, true);
                 if (!name) return;
 
                 const img = new Image();
                 const url = URL.createObjectURL(file);
-                img.onload = () => {
+                img.onload = async () => {
                     URL.revokeObjectURL(url);
 
-                    // 检查文件大小，大于1MB则尝试压缩
-                    if (file.size > 1 * 1024 * 1024) {
+                    // 检查配置项和文件大小，大于1MB且启用压缩时才尝试压缩
+                    if (chat_settings && chat_settings.enable_image_compression && file.size > 1 * 1024 * 1024) {
                         console.log(`[图片上传] 原始大小: ${(file.size / 1024 / 1024).toFixed(2)}MB，开始压缩...`);
+
+                        // 检测 Canvas 是否可用
+                        const canvasAvailable = await this.checkCanvasAvailable();
+                        
+                        if (!canvasAvailable) {
+                            console.warn('[图片上传] Canvas 不可用（可能被 Firefox 隐私扩展禁用），跳过压缩，使用原始图片');
+                            console.warn('[图片上传] 如需启用压缩功能，请在浏览器设置中允许 Canvas 权限');
+                            this._send_original_image(file, name, img);
+                            return;
+                        }
+
+                        console.log('[图片上传] Canvas 可用，开始压缩图片');
 
                         // 压缩图片
                         const canvas = document.createElement('canvas');
@@ -14547,7 +14863,11 @@
                             }
                         }, 'image/jpeg', quality);
                     } else {
-                        console.log(`[图片上传] 文件小于1MB，不压缩`);
+                        if (!chat_settings || !chat_settings.enable_image_compression) {
+                            console.log('[图片上传] 图片压缩功能已禁用（配置项），不压缩');
+                        } else if (file.size <= 1 * 1024 * 1024) {
+                            console.log('[图片上传] 文件小于1MB，不压缩');
+                        }
                         this._send_original_image(file, name, img);
                     }
                 };
@@ -15314,8 +15634,6 @@
 					onfetcherror(error);
 				});
 			}
-
-
 
             /*
             * 管理缓存的消息和渲染
@@ -17628,6 +17946,7 @@
                 const extraFormats = [
                     { type: 'code', icon: 'bi-code', title: '代码' },
                     { type: 'quote', icon: 'bi-quote', title: '引用' },
+                    { type: 'link', icon: 'bi-link', title: '链接' },
                 ];
 
                 extraFormats.forEach(fmt => {
@@ -17786,6 +18105,19 @@
                         break;
                     case 'quote':
                         formattedText = `> ${selectedText}`;
+                        break;
+                    case 'link':
+                        // 检测选中的文本是否是有效的链接格式
+                        const urlPattern = /^https?:\/\/.+/i;
+                        if (urlPattern.test(selectedText)) {
+                            formattedText = `[链接](${selectedText})`;
+                        } else {
+                            showChatToast({
+                                title: '提示',
+                                content: '请选择有效的链接地址（以 http:// 或 https:// 开头）'
+                            });
+                            return;
+                        }
                         break;
                 }
 
@@ -18384,8 +18716,6 @@
                 }, 3000);
             }
 
-
-
             /*
             * 文本输入框
             * */
@@ -18499,7 +18829,6 @@
                 });
 
             }
-
 
             /*
             * 加载历史
@@ -19830,7 +20159,8 @@
                     const now = Date.now() / 1000;
                     const left_for_day = !form_field_checker.ffc_int(attr.last_login_time) ? true : attr.last_login_time < now - seconds_of_one_day;
                     let text_last_login_time = format_timestamp_utc8(attr.last_login_time);
-                    if (left_for_day) {
+                    // 只有当 last_login_time 有效且需要显示天数时才添加天数信息
+                    if (left_for_day && form_field_checker.ffc_int(attr.last_login_time)) {
                         const days_offline = Math.floor((now - attr.last_login_time) / seconds_of_one_day);
                         text_last_login_time += `（${days_offline}天前）`;
                     }
@@ -21650,8 +21980,22 @@
                         parts.push(`</span>`);
                     } //
                     else if (token.type === "link") {
-                        parts.push(`<a href="${MarkdownResolver.escapeHTML(token.url)}" target="_blank" class="md-link">`);
-                        parts.push(MarkdownResolver.escapeHTML(token.text));
+                        // 智能识别 URL：如果 URL 不像 URL 但文本像 URL，则交换
+                        let href = token.url;
+                        let text = token.text;
+                        
+                        // 检查 URL 是否以 http:// 或 https:// 开头
+                        const urlPattern = /^https?:\/\//i;
+                        const textIsUrl = urlPattern.test(text);
+                        const urlIsUrl = urlPattern.test(href);
+                        
+                        // 如果文本是 URL 但 URL 不是 URL，则交换
+                        if (textIsUrl && !urlIsUrl) {
+                            [href, text] = [text, href];
+                        }
+                        
+                        parts.push(`<a href="${MarkdownResolver.escapeHTML(href)}" target="_blank" class="md-link">`);
+                        parts.push(MarkdownResolver.escapeHTML(text));
                         parts.push(`</a>`);
                     } //
                     else if (token.type === "image") {
@@ -22621,7 +22965,6 @@
                     }
                 });
 
-
                 const onfetchload = (result) => {
                     // if (this.closed) return;
 
@@ -22740,7 +23083,6 @@
                     }
                 }
             }
-
 
             async update_contact_item_status(status_attr) {
                 if (!this.is_active()) return;
@@ -22862,7 +23204,6 @@
 
     })()
 
-
     /*
     * APP
     * */
@@ -22906,7 +23247,6 @@
             });
             this.header_btn_more_left.classList.add("hidden");
             this.header_toolbar_btn_download = document.getElementById("header-toolbar-btn-download"); // 下载任务按钮
-            this.header_toolbar_btn_chatgpt = document.getElementById("header-toolbar-btn-chatgpt"); // ChatGPT按钮
             this.header_toolbar_btn_links = document.getElementById("header-toolbar-btn-links"); // 友链按钮
             this.header_btn_more_right = document.getElementById("header-btn-more-right"); // 右侧
             this.header_btn_more_right.addEventListener("click", (event) => {
@@ -22961,7 +23301,6 @@
                     panel.wrapper = new dashboardwrappers.DashboardWrapper(panel);
                 }
             }
-
 
             this.login_rect = document.getElementById("login-rect"); // 登录
             this.login_tip_user = document.getElementById("login-tip-user");
@@ -23356,16 +23695,14 @@
                 this._switch_panel_to_apps();
             } else {
                 this.login_panel.classList.add("active");
-                // 登录页面隐藏下载、ChatGPT和友链按钮
+                // 登录页面隐藏下载和友链按钮
                 this.header_toolbar_btn_download.classList.add("hidden");
-                this.header_toolbar_btn_chatgpt.classList.add("hidden");
                 this.header_toolbar_btn_links.classList.add("hidden");
             }
 
             if (btn) {
-                // 显示下载、ChatGPT和友链按钮
+                // 显示下载和友链按钮
                 this.header_toolbar_btn_download.classList.remove("hidden");
-                this.header_toolbar_btn_chatgpt.classList.remove("hidden");
                 this.header_toolbar_btn_links.classList.remove("hidden");
                 const avatar = this.header_btn_more_right.querySelector('.user-avatar');
                 if (avatar) {
@@ -23390,9 +23727,8 @@
         }
 
         _switch_panel_to_apps() {
-            // 显示下载、ChatGPT和友链按钮
+            // 显示下载和友链按钮
             this.header_toolbar_btn_download.classList.remove("hidden");
-            this.header_toolbar_btn_chatgpt.classList.remove("hidden");
             this.header_toolbar_btn_links.classList.remove("hidden");
         }
 
@@ -23463,9 +23799,8 @@
             if (jumpto.backend_panel) {
                 this.login_panel.classList.remove("active");
                 this.backend_panel.classList.add("active");
-                // 后台页面隐藏下载和ChatGPT按钮，但显示友链按钮
+                // 后台页面隐藏下载按钮，但显示友链按钮
                 this.header_toolbar_btn_download.classList.add("hidden");
-                this.header_toolbar_btn_chatgpt.classList.add("hidden");
                 this.header_toolbar_btn_links.classList.remove("hidden");
                 const avatar = this.header_btn_more_right.querySelector('.user-avatar');
                 if (avatar) {
@@ -23475,7 +23810,6 @@
                 this.check_if_need_hide_aside();
             }
         }
-
 
         /*
         * 从首页打开应用
@@ -23488,7 +23822,6 @@
             header_btn.classList.remove("hidden");
             this.switch_panel_btn({target: header_btn,});
         }
-
 
         /*
         * 右侧页面
@@ -23612,9 +23945,8 @@
             checkin.header_btn_more_left.classList.add("hidden");
             // checkin.header_btn_more_right.classList.add("hidden");
 
-            // 管理员登录页面隐藏下载、ChatGPT和友链按钮
+            // 管理员登录页面隐藏下载和友链按钮
             checkin.header_toolbar_btn_download.classList.add("hidden");
-            checkin.header_toolbar_btn_chatgpt.classList.add("hidden");
             checkin.header_toolbar_btn_links.classList.add("hidden");
 
             checkin.login_tip_admin.classList.remove("hidden");
@@ -23659,9 +23991,7 @@
     checkin.apply_theme();
     initialize();
 
-
 </script>
-
 
 <script>
 const textarea = document.querySelector('.chat-session-inputarea-textarea');
