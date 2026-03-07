@@ -3533,16 +3533,12 @@
             z-index: 9;
 
             /* 移除 backdrop-filter 以提高性能，改用更轻量的半透明背景 */
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             /* backdrop-filter: blur(2px); */
             /* -webkit-backdrop-filter: blur(2px); */
 
             /* 添加 will-change 优化渲染性能 */
             will-change: opacity;
-        }
-
-        .theme-dark div.blur-mark {
-            background: rgba(0, 0, 0, 0.5);
         }
 
     </style>
@@ -3826,7 +3822,7 @@
             top: 0;
             display: flex;
             flex-direction: row;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(30, 30, 30, 0.95);
             min-height: 10px;
         }
 
@@ -3838,6 +3834,7 @@
             display: inline-block;
             padding: 8px 20px;
             font-size: 16px;
+            color: #e0e0e0;
             background: transparent;
             transition: all 0.1s ease-in-out;
             border: none;
@@ -3846,15 +3843,15 @@
         }
 
         .image-mark-top-actions > button:hover {
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .image-mark-top-actions > button:active {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .image-mark-top-actions > button.image-mark-top-actions-close {
-            color: #dc1d1d;
+            color: #ff6b6b;
         }
 
 
@@ -8675,11 +8672,7 @@
         }
 
         fill() {
-            if (is_theme_dark()) {
-                this.mark.style.background = "rgba(255, 255, 255, 0.1)";
-            } else {
-                this.mark.style.background = "rgba(255, 255, 255, 0.7)";
-            }
+            this.mark.style.background = "rgba(0, 0, 0, 0.7)";
             let html = `
 <div class="image-mark-rect">
 
@@ -13952,6 +13945,11 @@
 
                 // 初始化写字板
                 this.init_writeboard = () => {
+                    // 防止重复初始化
+                    if (this.writeboard_initialized) {
+                        return;
+                    }
+
                     const canvas = this.e_writeboard_canvas;
                     const cursor = this.e_writeboard_cursor;
 
@@ -14255,6 +14253,9 @@
                     window.addEventListener("mouseup", () => {
                         isResizing = false;
                     });
+
+                    // 标记已初始化，防止重复初始化
+                    this.writeboard_initialized = true;
                 };
 
                 // 清空按钮（在 init_writeboard 外部绑定，避免重复绑定）
@@ -23514,6 +23515,7 @@
     class Checkin {
         constructor() {
             this.name = document.title;
+            this.canvas_initialized = false; // Canvas初始化标志
             this.subviews = {
                 api: new subviews.Api(this),
                 admin: new subviews.Admin(this),
@@ -24064,6 +24066,18 @@
         }
 
         _switch_panel_to_chat() {
+            // 初始化临时canvas以激活canvas机制（类似手写板的处理方式）
+            // 这样可以在用户首次进入聊天模块时触发权限提示，避免上传图片时出现问题
+            if (!this.canvas_initialized) {
+                console.log('[聊天模块] 初始化临时canvas以激活canvas机制');
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 1;
+                tempCanvas.height = 1;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.fillRect(0, 0, 1, 1); // 触发canvas操作
+                this.canvas_initialized = true;
+            }
+
             if (!form_field_checker.ffc_array(this.dashboard_chat.wrapper.contact_items())) { // 获取联系人列表
                 if (!this.dashboard_chat.wrapper.loading_mark.is_visible()) {
                     this.dashboard_chat.wrapper.remove_all_contact_items();
