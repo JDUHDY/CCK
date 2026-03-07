@@ -2985,12 +2985,14 @@
             display: flex;
             padding: 0px 8px 0px 8px;
             position: relative;
+            min-height: 0;
         }
 
         .aside-right > div {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         .aside-divider {
@@ -3195,7 +3197,7 @@
         /* 行号区域 */
         .settings-line-numbers {
             flex-shrink: 0;
-            width: 50px;
+            width: 10px;
             padding: 16px 8px;
             background: #f8f9fa;
             border-right: 1px solid #dee2e6;
@@ -4231,8 +4233,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            min-height: 0;
-            overflow: hidden;
+            overflow: visible;
         }
 
         /* 顶级节点样式 */
@@ -4340,6 +4341,7 @@
             flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
         }
 
         .drive-header {
@@ -4458,8 +4460,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-
-            overflow: auto;
+            min-height: 0;
         }
 
         .drive-items-wrap.drag-active {
@@ -4475,9 +4476,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-
-            /*overflow-y: auto;*/
-            /*flex-grow: 1;*/
+            overflow-y: auto;
         }
 
         .drive-item {
@@ -4489,7 +4488,7 @@
         }
 
         .drive-items details:last-of-type {
-            margin-bottom: 100px;
+            // margin-bottom: 100px;
         }
 
         .drive-item-icon-file {
@@ -4554,8 +4553,9 @@
             display: flex;
             flex-direction: row;
             justify-content: left;
-            gap: 4px;
+            gap: 10px;
             align-items: end;
+            color: #6a6a6a;
         }
 
         .drive-item-info-others span {
@@ -6154,7 +6154,7 @@
         }
 
         .chat-session-msgflow > .chat-message:last-of-type {
-            margin-bottom: 40px;
+            // margin-bottom: 40px;
         }
 
         .chat-message-group {
@@ -7582,6 +7582,46 @@
         const l2 = format_timestamp_utc8(Date.now() / 1000).split(" ");
         if (l1[0] === l2[0]) return l1[1];
         return l1[0].slice(5);
+    }
+
+    function format_relative_time(timestamp) {
+        if (!timestamp) return "未知";
+        
+        // 如果 timestamp 是字符串格式(如 "2024-03-07 12:30:45"),转换为时间戳
+        let timeInSeconds;
+        if (typeof timestamp === 'string') {
+            // SQLite 返回的时间格式: "YYYY-MM-DD HH:mm:ss" (UTC时间)
+            // 需要转换为时间戳(秒)
+            const date = new Date(timestamp + 'Z'); // 添加 'Z' 标识为 UTC 时间
+            if (isNaN(date.getTime())) {
+                return "未知";
+            }
+            timeInSeconds = date.getTime() / 1000;
+        } else {
+            timeInSeconds = timestamp;
+        }
+        
+        const now = Date.now() / 1000;
+        const diff = now - timeInSeconds;
+        const seconds = Math.floor(diff);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+
+        if (seconds < 60) {
+            return "刚刚";
+        } else if (minutes < 60) {
+            return `${minutes}分钟前`;
+        } else if (hours < 24) {
+            return `${hours}小时前`;
+        } else if (days === 1) {
+            return "昨天";
+        } else if (days < 7) {
+            return `${days}天前`;
+        } else {
+            // 超过7天显示具体日期
+            return format_timestamp_utc8(timeInSeconds, "YYYY-MM-DD");
+        }
     }
 
     function format_timestamp_utc8_day_time(timestamp) {
@@ -11758,22 +11798,28 @@
                 this.update_item(item);
                 const e_info_others = item.raw_header.querySelector(":scope div.drive-item-info-others");
                 {
-                    const html = `<span>${format_timestamp_utc8(attr.uploaded_time)}</span>`;
+                    const html = `<span>${format_timestamp_utc8(attr.uploaded_time)}创建</span>`;
                     e_info_others.insertAdjacentHTML("beforeend", html,);
                 }
                 if (attr.type === subviews.Drive.item_type.file) {
-                    const html = `<span>由${format_uploader(attr.uploader)}上传</span>`;
+                    const html = `<span> | </span><span>由${format_uploader(attr.uploader)}上传</span>`;
                     e_info_others.insertAdjacentHTML("beforeend", html,);
                 } else if (attr.type === subviews.Drive.item_type.folder) {
-                    const html = `<span>由${format_uploader(attr.uploader)}创建</span>`;
+                    // 新增:对于文件夹显示最新更新时间
+                    if (attr.modified_time) {
+                        const display_time = attr.modified_time;
+                        const html = `<span> | </span><span title="${format_timestamp_utc8(display_time)}">${format_relative_time(display_time)}变动</span>`;
+                        e_info_others.insertAdjacentHTML("beforeend", html,);
+                    }
+                    const html = `<span> | </span><span>由${format_uploader(attr.uploader)}创建</span>`;
                     e_info_others.insertAdjacentHTML("beforeend", html,);
                 }
                 if (attr.type === subviews.Drive.item_type.file) {
-                    const html = `<span>${format_bytes(attr.size)}</span>`;
+                    const html = `<span> | </span><span>${format_bytes(attr.size)}</span>`;
                     e_info_others.insertAdjacentHTML("beforeend", html,);
                 }
                 {
-                    const html = `<span class="drive-item-info-others-share">${format_shared(attr)}</span>`;
+                    const html = `<span> | </span><span class="drive-item-info-others-share">${format_shared(attr)}</span>`;
                     e_info_others.insertAdjacentHTML("beforeend", html,);
                     item.e_info_others_share = e_info_others.querySelector(":scope > span:last-of-type");
                 }
@@ -14580,12 +14626,20 @@
                     if (error.auto_retry) {
                         this.stop_timer__fetch_unread_msgs();
                         if (this.closed) return;
-                        if (this.client.dashboard_chat.wrapper.is_active()) this.fetch_unread_msgs();
+                        if (this.client.dashboard_chat.wrapper.is_active()) {
+                            this.timer__fetch_unread_msgs = setTimeout(() => {
+                                this.fetch_unread_msgs();
+                            }, this.panel.wrapper.ws_isopen() ? this.interval__fetch_unread_msgs__ws : this.interval__fetch_unread_msgs);
+                        }
                     } else {
                         MessageMark.report(error, null, () => {
                             this.stop_timer__fetch_unread_msgs();
                             if (this.closed) return;
-                            if (this.client.dashboard_chat.wrapper.is_active()) this.fetch_unread_msgs();
+                            if (this.client.dashboard_chat.wrapper.is_active()) {
+                                this.timer__fetch_unread_msgs = setTimeout(() => {
+                                    this.fetch_unread_msgs();
+                                }, this.panel.wrapper.ws_isopen() ? this.interval__fetch_unread_msgs__ws : this.interval__fetch_unread_msgs);
+                            }
                         });
                     }
                 };
@@ -21591,8 +21645,45 @@
                     // 更新行号
                     const updateLineNumbers = () => {
                         const lines = this.e_textarea.value.split('\n');
-                        const lineNumbersHtml = lines.map((_, index) => index + 1).join('<br>');
-                        this.e_line_numbers.innerHTML = lineNumbersHtml;
+                        const textarea = this.e_textarea;
+                        const style = window.getComputedStyle(textarea);
+                        const paddingLeft = parseFloat(style.paddingLeft);
+                        const paddingRight = parseFloat(style.paddingRight);
+                        const availableWidth = textarea.clientWidth - paddingLeft - paddingRight;
+                        const fontSize = parseFloat(style.fontSize);
+                        const fontFamily = style.fontFamily;
+
+                        // 创建一个临时的 canvas 来计算文本宽度
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        ctx.font = `${fontSize}px ${fontFamily}`;
+
+                        const lineNumbers = [];
+
+                        lines.forEach((line, index) => {
+                            const lineNum = index + 1;
+
+                            // 如果是空行，直接添加一个行号
+                            if (line === '') {
+                                lineNumbers.push(lineNum);
+                                return;
+                            }
+
+                            // 计算这行文本在当前宽度下会占用多少视觉行
+                            const textWidth = ctx.measureText(line).width;
+                            const estimatedLines = Math.ceil(textWidth / availableWidth);
+
+                            // 为每个视觉行的开头添加行号
+                            for (let i = 0; i < estimatedLines; i++) {
+                                if (i === 0) {
+                                    lineNumbers.push(lineNum);
+                                } else {
+                                    lineNumbers.push('');
+                                }
+                            }
+                        });
+
+                        this.e_line_numbers.innerHTML = lineNumbers.join('<br>');
                     };
 
                     // 同步滚动
@@ -23293,11 +23384,19 @@
 
                     if (error.auto_retry) {
                         this.stop_timer__sync();
-                        if (this.is_active()) this.sync();
+                        if (this.is_active()) {
+                            this.timer__sync = setTimeout(() => {
+                                this.sync();
+                            }, this.ws_isopen() ? this.interval__sync__ws : this.interval__sync);
+                        }
                     } else {
                         MessageMark.report(error, null, () => {
                             this.stop_timer__sync();
-                            if (this.is_active()) this.sync();
+                            if (this.is_active()) {
+                                this.timer__sync = setTimeout(() => {
+                                    this.sync();
+                                }, this.ws_isopen() ? this.interval__sync__ws : this.interval__sync);
+                            }
                         });
                     }
 
