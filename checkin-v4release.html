@@ -126,9 +126,7 @@
             padding: 0;
         }
 
-        /* ================= 附件列表 ================= */
-        /* ===== 在线成员 & 附件列表字体增强 ===== */
-        /* ===== 在线成员 + 附件：整体浅蓝底 ===== */
+        /* ===== 附件列表 ===== */
         .e_msgflow_mark_onlineusers {
             background-color: rgba(0, 123, 255, 0.06);  /* 浅蓝主题底色 */
         }
@@ -271,7 +269,7 @@
             white-space: nowrap;
         }
 
-        /* ================= 选择消息出现菜单 ================= */
+        /* ===== 选择消息出现菜单 ===== */
 
         /* 选中高亮 */
         .chat-message-content-container.selected {
@@ -327,7 +325,7 @@
             outline: none;
         }
 
-        /* ================= 批量选择模式样式 ================= */
+        /* ===== 批量选择模式样式 ===== */
 
         /* 批量选择模式下的消息容器 */
         .chat-message.batch-select-mode {
@@ -429,7 +427,7 @@
             border-radius: 12px;
         }
 
-         /* ================= 消息冒泡 - 顶部右上角 ================= */
+         /* ===== 消息冒泡 - 顶部右上角 ===== */
         #chat-toast-container {
             position: fixed;
             top: 20px;
@@ -2287,7 +2285,6 @@
         }
 
         /* 发送按钮 */
-        /* 发送按钮：现代浅蓝/暗黑自适应 */
         .chat-session-inputarea-sendbtn {
             flex-shrink: 0;
             min-width: 100px;
@@ -3160,7 +3157,20 @@
         }
 
         .settings-description p {
-            margin: 0;
+            margin: 4px 0;
+        }
+
+        .settings-description p:first-child {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 验证错误提示 */
+        .validation-error {
+            color: #dc3545;
+            font-weight: 600;
+            margin-top: 4px;
+            display: none;
         }
 
         /* 编辑框容器 */
@@ -3171,6 +3181,40 @@
             overflow: hidden;
             min-height: 0;
             max-height: 100%;
+        }
+
+        /* 文本编辑框容器 */
+        .settings-textarea-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        /* 行号区域 */
+        .settings-line-numbers {
+            flex-shrink: 0;
+            width: 50px;
+            padding: 16px 8px;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #999;
+            text-align: right;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* 文本编辑框容器 */
+        .settings-textarea-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
         }
 
         /* 文本编辑框 - 自适应填满容器 */
@@ -3190,14 +3234,18 @@
             min-height: 0;
         }
 
+        /* 在容器内的 textarea 移除边框 */
+        .settings-textarea-container .settings-textarea {
+            border: none;
+            border-radius: 0;
+        }
+
         .settings-textarea:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
 
         .settings-textarea::placeholder {
-            color: #000;
+            color: #adb5bd;
         }
 
         /* 预览区域 */
@@ -3370,15 +3418,27 @@
             color: #fc8181;
         }
 
-        .theme-dark .settings-textarea {
-            background: #2d3748;
-            border-color: #4a5568;
-            color: #e2e8f0;
+        .theme-dark .settings-description p:first-child {
+            color: #a0aec0;
         }
 
-        .theme-dark .settings-textarea:focus {
-            border-color: #63b3ed;
-            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
+        .theme-dark .validation-error {
+            color: #fc8181;
+        }
+
+        .theme-dark .settings-textarea-container {
+            border-color: #4a5568;
+        }
+
+        .theme-dark .settings-line-numbers {
+            background: #1a202c;
+            border-right-color: #4a5568;
+            color: #718096;
+        }
+
+        .theme-dark .settings-textarea {
+            background: #2d3748;
+            color: #e2e8f0;
         }
 
         .theme-dark .settings-textarea::placeholder {
@@ -13195,7 +13255,6 @@
 
                                 });
 
-
 				// =============================
 				// 半屏候选词：DOM 引用
 				// =============================
@@ -13215,7 +13274,6 @@
 					".chat-candidate-panel-close"
 				);
 
-
 				// 半屏候选词 DOM
 				this.e_candidate_panel_body = this.container.querySelector(".chat-candidate-panel-body");
 				this.e_candidate_prev = this.container.querySelector(".chat-candidate-panel-prev");
@@ -13230,9 +13288,6 @@
 					this.e_candidate_prev.disabled = body.scrollTop <= 0;
 					this.e_candidate_next.disabled = body.scrollTop + body.clientHeight >= body.scrollHeight;
 				};
-
-				
-
 
 				// 翻页按钮
 				const scrollStep = 150;
@@ -13262,8 +13317,6 @@
                 this.e_inputarea_textarea.addEventListener('blur', () => {
                     floatball.setOpacity(1);
                 });
-
-
 
                  // =============================
                 // 新增：候选词逻辑
@@ -13509,7 +13562,6 @@
                     }, 150);
                 });
 
-
 				// =============================
 				// 半屏候选词：打开 / 关闭
 				// =============================
@@ -13594,8 +13646,6 @@
                     this.e_inputarea_textarea.focus();
                 });
 
-
-
                 // =============================
                 // 横向滚动按钮
                 // =============================
@@ -13608,8 +13658,6 @@
                 if (nextBtn) nextBtn.addEventListener("click", () => {
                     this.e_inputarea_candidates.scrollBy({ left: 100, behavior: "smooth" });
                 });
-
-
 
                 // 回车发送（原逻辑，保留）
                 this.e_inputarea_textarea.addEventListener('keydown', (e) => {
@@ -13899,11 +13947,26 @@
                 this.write_history_index = -1; // 当前历史位置
                 this.write_max_history = 50; // 最大历史记录数
                 this.writeboard_initialized = false; // 防止重复初始化
+                this.pen_size = 4; // 画笔默认尺寸
+                this.eraser_size = 6; // 橡皮默认尺寸
 
                 // 初始化写字板
                 this.init_writeboard = () => {
                     const canvas = this.e_writeboard_canvas;
                     const cursor = this.e_writeboard_cursor;
+
+                    // 同步工具按钮的初始状态
+                    if (this.write_tool_type === 'pen') {
+                        this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-eraser"></i> 橡皮';
+                        this.e_writeboard_tool_toggle.classList.remove('eraser');
+                        cursor.classList.remove('eraser');
+                        cursor.classList.add('pen');
+                    } else {
+                        this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-pencil"></i> 写字';
+                        this.e_writeboard_tool_toggle.classList.add('eraser');
+                        cursor.classList.remove('pen');
+                        cursor.classList.add('eraser');
+                    }
 
                     // 更新鼠标光标大小
                     const updateCursorSize = (size) => {
@@ -14083,6 +14146,10 @@
                             this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-pencil"></i> 写字';
                             this.e_writeboard_tool_toggle.classList.add('eraser');
                             this.write_ctx.globalCompositeOperation = 'destination-out';
+                            this.write_ctx.lineWidth = this.eraser_size;
+                            this.e_writeboard_brush_size.value = this.eraser_size;
+                            this.e_writeboard_brush_preview.style.setProperty('--brush-size', `${this.eraser_size}px`);
+                            updateCursorSize(this.eraser_size);
                             cursor.classList.remove('pen');
                             cursor.classList.add('eraser');
                         } else {
@@ -14090,6 +14157,10 @@
                             this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-eraser"></i> 橡皮';
                             this.e_writeboard_tool_toggle.classList.remove('eraser');
                             this.write_ctx.globalCompositeOperation = 'source-over';
+                            this.write_ctx.lineWidth = this.pen_size;
+                            this.e_writeboard_brush_size.value = this.pen_size;
+                            this.e_writeboard_brush_preview.style.setProperty('--brush-size', `${this.pen_size}px`);
+                            updateCursorSize(this.pen_size);
                             cursor.classList.remove('eraser');
                             cursor.classList.add('pen');
                         }
@@ -14249,20 +14320,19 @@
                     this.e_writeboard_tool_toggle.classList.remove('eraser');
                     this.e_writeboard_cursor.classList.remove('eraser');
                     this.e_writeboard_cursor.classList.add('pen');
-                    // 重置画布绘图状态
+                    // 重置画布绘图状态和尺寸
                     if (this.write_ctx) {
                         this.write_ctx.globalCompositeOperation = 'source-over';
-                        this.write_ctx.strokeStyle = document.body.classList.contains('theme-dark') ? "#fff" : "#000";
-                        this.write_ctx.lineWidth = 4;
+                        this.write_ctx.lineWidth = this.pen_size;
                     }
+                    this.e_writeboard_brush_size.value = this.pen_size;
+                    this.e_writeboard_brush_preview.style.setProperty('--brush-size', `${this.pen_size}px`);
                     // 只在第一次初始化时绑定事件
                     if (!this.writeboard_initialized) {
                         this.init_writeboard();
                         this.writeboard_initialized = true;
                     }
                 });
-
-
 
                 setTimeout(() => {
                     check_scroll_to_end();
@@ -14406,8 +14476,6 @@
                 } else if (contact_type === subviews.Chat.receiver_type.user) {
                     body.uid = xxid;
                 }
-
-                
 
                 try {
                     const response = await net_fetcher.nf_post_json(`${top_level_path}/chat/api/get_message_replies`, body);
@@ -14770,8 +14838,8 @@
             // 检测 Canvas 是否可用（用于检测 Firefox 隐私扩展是否禁用了 Canvas 权限）
             async checkCanvasAvailable() {
                 const testCanvas = document.createElement('canvas');
-                testCanvas.width = 1;
-                testCanvas.height = 1;
+                testCanvas.width = 2;
+                testCanvas.height = 2;
                 const ctx = testCanvas.getContext('2d');
                 
                 if (!ctx) {
@@ -14779,11 +14847,38 @@
                     return false;
                 }
                 
-                // 绘制一个 1x1 红色像素
+                // 绘制一个 2x2 的测试图案：左上红色，右下蓝色
                 ctx.fillStyle = '#FF0000';
                 ctx.fillRect(0, 0, 1, 1);
+                ctx.fillStyle = '#0000FF';
+                ctx.fillRect(1, 1, 1, 1);
                 
                 return new Promise((resolve) => {
+                    // 读取像素数据来验证是否被随机化
+                    const imageData = ctx.getImageData(0, 0, 2, 2);
+                    const data = imageData.data;
+                    
+                    // 检查左上像素 (0,0) 是否为红色 (255, 0, 0, 255)
+                    // 如果被随机化，颜色会完全不同
+                    const isRedPixel = data[0] === 255 && data[1] === 0 && data[2] === 0 && data[3] === 255;
+                    
+                    if (!isRedPixel) {
+                        console.warn(`[图片上传] Canvas 数据被随机化（像素值: [${data[0]}, ${data[1]}, ${data[2]}, ${data[3]}]），可能被隐私扩展禁用`);
+                        resolve(false);
+                        return;
+                    }
+                    
+                    // 检查右下像素 (1,1) 是否为蓝色 (0, 0, 255, 255)
+                    const bluePixelIndex = 12; // (1,1) 像素的起始索引：1*2*4 + 1*4 = 12
+                    const isBluePixel = data[bluePixelIndex] === 0 && data[bluePixelIndex + 1] === 0 && data[bluePixelIndex + 2] === 255 && data[bluePixelIndex + 3] === 255;
+                    
+                    if (!isBluePixel) {
+                        console.warn(`[图片上传] Canvas 数据被随机化（像素值: [${data[bluePixelIndex]}, ${data[bluePixelIndex + 1]}, ${data[bluePixelIndex + 2]}, ${data[bluePixelIndex + 3]}]），可能被隐私扩展禁用`);
+                        resolve(false);
+                        return;
+                    }
+                    
+                    // 使用 toBlob 进一步验证（作为双重检查）
                     testCanvas.toBlob((blob) => {
                         if (!blob) {
                             console.warn('[图片上传] Canvas toBlob 返回空值');
@@ -14791,9 +14886,8 @@
                             return;
                         }
                         
-                        // 验证数据：1x1 红色像素的 JPEG 大小应该在合理范围内
-                        // 正常情况下，1x1 的 JPEG 大小通常在 100-500 字节之间
-                        // 如果被随机化（Firefox 隐私扩展），大小会异常（通常 > 1KB）
+                        // 验证数据：2x2 的 JPEG 大小应该在合理范围内
+                        // 正常情况下，2x2 的 JPEG 大小通常在 200-800 字节之间
                         const isNormalSize = blob.size > 0 && blob.size < 1000;
                         
                         if (!isNormalSize) {
@@ -15670,8 +15764,6 @@
 					onfetcherror(error);
 				});
 			}
-
-
 
             /*
             * 管理缓存的消息和渲染
@@ -16698,7 +16790,7 @@
                         if (!this.contentpage.e_pinned_messages) {
                             this.contentpage.e_pinned_messages = this.contentpage.container.querySelector(":scope .chat-session-pinned-messages");
                         }
-                        
+
                         const pinnedElement = this.contentpage.e_pinned_messages.querySelector(`:scope .chat-message[data-msg-id="${this.msgattr.id}"]`);
                         if (pinnedElement && pinnedElement.classList.contains("pinned-compact")) {
                             const previewElement = pinnedElement.querySelector(":scope .pinned-content-preview");
@@ -16706,6 +16798,16 @@
                                 let previewText = "";
                                 if (this.msgattr.type === 1) { // 文本消息
                                     previewText = this.msgattr.plain_data_text || "";
+                                    // 使用 MarkdownResolver 解析 Markdown 和 HTML 语法
+                                    if (previewText) {
+                                        previewElement.innerHTML = MarkdownResolver.to_html(previewText);
+                                        // 限制预览长度（截取纯文本）
+                                        const plainText = previewElement.textContent;
+                                        if (plainText.length > 50) {
+                                            previewElement.textContent = plainText.substring(0, 47) + "...";
+                                        }
+                                        return;
+                                    }
                                 } else if (this.msgattr.type === 2) { // 图片消息
                                     previewText = "图片";
                                 } else if (this.msgattr.type === 3) { // 文件消息
@@ -16713,12 +16815,12 @@
                                 } else if (this.msgattr.type === 5) { // 投票消息
                                     previewText = "投票：" + (this.msgattr.data_text?.match(/标题[：:]\s*(.+)/)?.[1] || "未命名投票");
                                 }
-                                
+
                                 // 限制预览长度
                                 if (previewText.length > 50) {
                                     previewText = previewText.substring(0, 47) + "...";
                                 }
-                                
+
                                 previewElement.textContent = previewText;
                             }
                         }
@@ -18754,8 +18856,6 @@
                 }, 3000);
             }
 
-
-
             /*
             * 文本输入框
             * */
@@ -18869,7 +18969,6 @@
                 });
 
             }
-
 
             /*
             * 加载历史
@@ -19269,13 +19368,27 @@
                     
                     // 获取消息内容预览
                     let previewText = "";
+                    let previewHTML = "";
                     if (msgattr.type === 1) { // 文本消息
                         // 从DOM中提取文本内容
                         const mdText = targetMsgElement.querySelector(":scope .md-text");
                         if (mdText) {
-                            previewText = mdText.textContent || "";
+                            previewText = msgattr.plain_data_text || mdText.textContent || "";
                         } else {
                             previewText = msgattr.plain_data_text || "";
+                        }
+                        // 使用 MarkdownResolver 解析 Markdown 和 HTML 语法
+                        if (previewText) {
+                            previewHTML = MarkdownResolver.to_html(previewText);
+                            // 限制预览长度（截取纯文本）
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = previewHTML;
+                            const plainText = tempDiv.textContent;
+                            if (plainText.length > 50) {
+                                previewText = plainText.substring(0, 47) + "...";
+                            } else {
+                                previewText = plainText;
+                            }
                         }
                     } else if (msgattr.type === 2) { // 图片消息
                         // 从DOM中提取图片描述
@@ -19325,11 +19438,13 @@
                     newMsgElement.originalElement = targetMsgElement;
                     
                     // 构建紧凑布局HTML - 顺序：📌 发送者名称 | 消息内容预览 | 时间戳 | ✕
+                    // 对于文本消息，使用解析后的 HTML；其他类型使用纯文本
+                    const previewContent = msgattr.type === 1 && previewHTML ? previewHTML : previewText;
                     newMsgElement.innerHTML = `
                         <i class="bi bi-pin-fill pinned-icon"></i>
                         <span class="pinned-sender-name" style="color: white; background: ${backgroundColor}">${senderName}</span>
                         <span class="pinned-separator">|</span>
-                        <div class="pinned-content-preview">${previewText}</div>
+                        <div class="pinned-content-preview">${previewContent}</div>
                         <span class="pinned-sent-time">${timeStr}</span>
                         <button class="pinned-close-btn" title="取消置顶">
                             <i class="bi bi-x-lg"></i>
@@ -21358,17 +21473,31 @@
                     const result = [];
                     const lines = text.split('\n');
                     let current_group = null;
+                    let current_phrases_line = ""; // 用于合并跨行的短语
 
                     for (const line of lines) {
                         const trimmed_line = line.trim();
 
-                        // 跳过空行
+                        // 跳过空行（只用于提高可读性）
                         if (trimmed_line === "") {
                             continue;
                         }
 
                         // 检查是否是分组标题（以#开头）
                         if (trimmed_line.startsWith('#')) {
+                            // 先处理未完成的短语行
+                            if (current_phrases_line.trim() !== "") {
+                                if (!current_group) {
+                                    current_group = {
+                                        category: "其他",
+                                        items: []
+                                    };
+                                }
+                                const phrases = current_phrases_line.split('|').map(p => p.trim()).filter(p => p !== '');
+                                current_group.items.push(...phrases);
+                                current_phrases_line = "";
+                            }
+
                             // 保存当前分组
                             if (current_group && current_group.items.length > 0) {
                                 result.push(current_group);
@@ -21381,7 +21510,7 @@
                                 items: []
                             };
                         } else {
-                            // 短语内容，用 | 分隔
+                            // 短语内容
                             if (!current_group) {
                                 // 如果没有分组标题，创建默认分组
                                 current_group = {
@@ -21389,10 +21518,24 @@
                                     items: []
                                 };
                             }
-                            // 按 | 分割短语
-                            const phrases = trimmed_line.split('|').map(p => p.trim()).filter(p => p !== '');
-                            current_group.items.push(...phrases);
+
+                            // 检查是否以 | 结尾（表示续写下一行）
+                            if (trimmed_line.endsWith('|')) {
+                                // 保留 |，等待下一行
+                                current_phrases_line += trimmed_line;
+                            } else {
+                                // 完整的短语行，合并后分割
+                                const phrases = (current_phrases_line + trimmed_line).split('|').map(p => p.trim()).filter(p => p !== '');
+                                current_group.items.push(...phrases);
+                                current_phrases_line = "";
+                            }
                         }
+                    }
+
+                    // 处理最后未完成的短语行（以 | 结尾的）
+                    if (current_phrases_line.trim() !== "" && current_group) {
+                        const phrases = current_phrases_line.split('|').map(p => p.trim()).filter(p => p !== '');
+                        current_group.items.push(...phrases);
                     }
 
                     // 保存最后一个分组
@@ -21418,11 +21561,15 @@
 </div>
 
 <div class="settings-description">
-    <p>格式说明：#开头为分组，|分隔短语内容</p>
+    <p>格式说明：#开头为分组，|分隔短语内容（可在 | 后换行，空行仅用于提高可读性，换行后需要用 | 分隔）</p>
+    <p id="settings-validation-error" class="validation-error"></p>
 </div>
 
 <div class="settings-editor">
-    <textarea class="settings-textarea" placeholder="示例：&#10;&#10;#常用问候&#10;你好|大家好|辛苦了&#10;&#10;#工作用语&#10;收到|好的|没问题|马上处理&#10;&#10;#表情包&#10;👍|🙏|😊"></textarea>
+    <div class="settings-textarea-container">
+        <div class="settings-line-numbers"></div>
+        <textarea class="settings-textarea" spellcheck="false" placeholder="示例：&#10;&#10;#常用问候&#10;你好|大家好|辛苦了&#10;&#10;#工作用语&#10;收到|好的|没问题|马上处理&#10;&#10;#表情包&#10;👍|🙏|😊"></textarea>
+    </div>
 </div>
 
 </div>
@@ -21433,12 +21580,119 @@
                     this.e_textarea = this.settings_rect.querySelector(":scope textarea.settings-textarea");
                     this.e_btn_save = this.settings_rect.querySelector(":scope button.settings-btn-save");
                     this.e_save_status = this.settings_rect.querySelector(":scope span.settings-save-status");
+                    this.e_validation_error = this.settings_rect.querySelector(":scope p#settings-validation-error");
+                    this.e_line_numbers = this.settings_rect.querySelector(":scope .settings-line-numbers");
 
                     this.e_btn_save.addEventListener("click", (event) => {
                         this.save();
                     });
 
+                    // 更新行号
+                    const updateLineNumbers = () => {
+                        const lines = this.e_textarea.value.split('\n');
+                        const lineNumbersHtml = lines.map((_, index) => index + 1).join('<br>');
+                        this.e_line_numbers.innerHTML = lineNumbersHtml;
+                    };
+
+                    // 同步滚动
+                    this.e_textarea.addEventListener("scroll", () => {
+                        this.e_line_numbers.scrollTop = this.e_textarea.scrollTop;
+                    });
+
+                    // 实时验证格式和更新行号
+                    this.e_textarea.addEventListener("input", () => {
+                        this.validate_format();
+                        updateLineNumbers();
+                    });
+
                     this.load();
+                }
+
+                // 验证格式并显示错误
+                validate_format() {
+                    const text = this.e_textarea.value;
+                    const errors = [];
+                    const lines = text.split('\n');
+
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        const lineNum = i + 1;
+
+                        // 跳过空行
+                        if (line.trim() === "") {
+                            continue;
+                        }
+
+                        // 检查是否是分组标题（以#开头）
+                        if (line.trim().startsWith('#')) {
+                            // 检查分组名是否为空
+                            const category = line.substring(1).trim();
+                            if (category === "") {
+                                errors.push(`第 ${lineNum} 行：分组名不能为空`);
+                            }
+                            // 检查分组名是否包含非法字符（#或|）
+                            if (category.includes('#') || category.includes('|')) {
+                                errors.push(`第 ${lineNum} 行：分组名不能包含 # 或 |`);
+                            }
+                        } else {
+                            const trimmed_line = line.trim();
+                            // 检查短语行是否以 | 开头（不允许）
+                            if (trimmed_line.startsWith('|')) {
+                                errors.push(`第 ${lineNum} 行：不能以 | 开头`);
+                            }
+                            // 检查短语是否包含分组标记
+                            const phrases = trimmed_line.split('|').map(p => p.trim());
+                            const invalidPhrases = phrases.filter(p => p !== '' && p.includes('#'));
+                            if (invalidPhrases.length > 0) {
+                                errors.push(`第 ${lineNum} 行：短语内容不能包含 #`);
+                            }
+                        }
+                    }
+
+                    // 检查是否有跨行换行但缺少 | 的情况
+                    // 找到下一个非空行，检查是否缺少 |
+                    for (let i = 0; i < lines.length; i++) {
+                        const currentLine = lines[i].trim();
+
+                        // 跳过空行和分组标题
+                        if (currentLine === "" || currentLine.startsWith('#')) {
+                            continue;
+                        }
+
+                        // 如果当前行不以 | 结尾，需要检查后面是否有非空行且不以 | 开头
+                        if (!currentLine.endsWith('|')) {
+                            // 查找下一个非空行
+                            for (let j = i + 1; j < lines.length; j++) {
+                                const nextLine = lines[j].trim();
+
+                                // 跳过空行
+                                if (nextLine === "") {
+                                    continue;
+                                }
+
+                                // 如果是分组标题，停止检查
+                                if (nextLine.startsWith('#')) {
+                                    break;
+                                }
+
+                                // 如果不以 | 开头，说明缺少 |
+                                if (!nextLine.startsWith('|')) {
+                                    errors.push(`第 ${i + 1} 行：换行后缺少 |（短语之间需要用 | 分隔）`);
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    if (errors.length > 0) {
+                        this.e_validation_error.innerHTML = errors.join('<br>');
+                        this.e_validation_error.style.display = 'block';
+                        return false;
+                    } else {
+                        this.e_validation_error.textContent = '';
+                        this.e_validation_error.style.display = 'none';
+                        return true;
+                    }
                 }
 
                 async load() {
@@ -21455,6 +21709,9 @@
                             // 如果数据库中没有数据，设置为空
                             this.e_textarea.value = "";
                         }
+                        // 更新行号
+                        const lines = this.e_textarea.value.split('\n');
+                        this.e_line_numbers.innerHTML = lines.map((_, index) => index + 1).join('<br>');
                         this.remove_loading_mark();
                     } catch (error) {
                         this.remove_loading_mark();
@@ -21470,6 +21727,12 @@
 
                 async save() {
                     try {
+                        // 先验证格式
+                        if (!this.validate_format()) {
+                            this.e_save_status.textContent = "格式错误，无法保存";
+                            return;
+                        }
+
                         this.loading_mark.show();
                         this.e_save_status.textContent = "保存中...";
                         // 将文本格式转换为 JSON
@@ -23006,7 +23269,6 @@
                     }
                 });
 
-
                 const onfetchload = (result) => {
                     // if (this.closed) return;
 
@@ -23125,7 +23387,6 @@
                     }
                 }
             }
-
 
             async update_contact_item_status(status_attr) {
                 if (!this.is_active()) return;
@@ -23247,7 +23508,6 @@
 
     })()
 
-
     /*
     * APP
     * */
@@ -23345,7 +23605,6 @@
                     panel.wrapper = new dashboardwrappers.DashboardWrapper(panel);
                 }
             }
-
 
             this.login_rect = document.getElementById("login-rect"); // 登录
             this.login_tip_user = document.getElementById("login-tip-user");
@@ -23856,7 +24115,6 @@
             }
         }
 
-
         /*
         * 从首页打开应用
         * */
@@ -23868,7 +24126,6 @@
             header_btn.classList.remove("hidden");
             this.switch_panel_btn({target: header_btn,});
         }
-
 
         /*
         * 右侧页面
@@ -24038,9 +24295,7 @@
     checkin.apply_theme();
     initialize();
 
-
 </script>
-
 
 <script>
 const textarea = document.querySelector('.chat-session-inputarea-textarea');
@@ -24058,5 +24313,3 @@ if (textarea) {
 </body>
 
 </html>
-
-
