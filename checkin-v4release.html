@@ -23515,7 +23515,6 @@
     class Checkin {
         constructor() {
             this.name = document.title;
-            this.canvas_initialized = false; // Canvas初始化标志
             this.subviews = {
                 api: new subviews.Api(this),
                 admin: new subviews.Admin(this),
@@ -24066,18 +24065,6 @@
         }
 
         _switch_panel_to_chat() {
-            // 初始化临时canvas以激活canvas机制（类似手写板的处理方式）
-            // 这样可以在用户首次进入聊天模块时触发权限提示，避免上传图片时出现问题
-            if (!this.canvas_initialized) {
-                console.log('[聊天模块] 初始化临时canvas以激活canvas机制');
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = 1;
-                tempCanvas.height = 1;
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.fillRect(0, 0, 1, 1); // 触发canvas操作
-                this.canvas_initialized = true;
-            }
-
             if (!form_field_checker.ffc_array(this.dashboard_chat.wrapper.contact_items())) { // 获取联系人列表
                 if (!this.dashboard_chat.wrapper.loading_mark.is_visible()) {
                     this.dashboard_chat.wrapper.remove_all_contact_items();
