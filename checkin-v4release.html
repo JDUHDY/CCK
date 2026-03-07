@@ -126,7 +126,9 @@
             padding: 0;
         }
 
-        /* ===== 附件列表 ===== */
+        /* ================= 附件列表 ================= */
+        /* ===== 在线成员 & 附件列表字体增强 ===== */
+        /* ===== 在线成员 + 附件：整体浅蓝底 ===== */
         .e_msgflow_mark_onlineusers {
             background-color: rgba(0, 123, 255, 0.06);  /* 浅蓝主题底色 */
         }
@@ -269,7 +271,7 @@
             white-space: nowrap;
         }
 
-        /* ===== 选择消息出现菜单 ===== */
+        /* ================= 选择消息出现菜单 ================= */
 
         /* 选中高亮 */
         .chat-message-content-container.selected {
@@ -325,7 +327,7 @@
             outline: none;
         }
 
-        /* ===== 批量选择模式样式 ===== */
+        /* ================= 批量选择模式样式 ================= */
 
         /* 批量选择模式下的消息容器 */
         .chat-message.batch-select-mode {
@@ -427,7 +429,7 @@
             border-radius: 12px;
         }
 
-         /* ===== 消息冒泡 - 顶部右上角 ===== */
+         /* ================= 消息冒泡 - 顶部右上角 ================= */
         #chat-toast-container {
             position: fixed;
             top: 20px;
@@ -2285,6 +2287,7 @@
         }
 
         /* 发送按钮 */
+        /* 发送按钮：现代浅蓝/暗黑自适应 */
         .chat-session-inputarea-sendbtn {
             flex-shrink: 0;
             min-width: 100px;
@@ -13192,6 +13195,7 @@
 
                                 });
 
+
 				// =============================
 				// 半屏候选词：DOM 引用
 				// =============================
@@ -13211,6 +13215,7 @@
 					".chat-candidate-panel-close"
 				);
 
+
 				// 半屏候选词 DOM
 				this.e_candidate_panel_body = this.container.querySelector(".chat-candidate-panel-body");
 				this.e_candidate_prev = this.container.querySelector(".chat-candidate-panel-prev");
@@ -13225,6 +13230,9 @@
 					this.e_candidate_prev.disabled = body.scrollTop <= 0;
 					this.e_candidate_next.disabled = body.scrollTop + body.clientHeight >= body.scrollHeight;
 				};
+
+				
+
 
 				// 翻页按钮
 				const scrollStep = 150;
@@ -13254,6 +13262,8 @@
                 this.e_inputarea_textarea.addEventListener('blur', () => {
                     floatball.setOpacity(1);
                 });
+
+
 
                  // =============================
                 // 新增：候选词逻辑
@@ -13499,6 +13509,7 @@
                     }, 150);
                 });
 
+
 				// =============================
 				// 半屏候选词：打开 / 关闭
 				// =============================
@@ -13583,6 +13594,8 @@
                     this.e_inputarea_textarea.focus();
                 });
 
+
+
                 // =============================
                 // 横向滚动按钮
                 // =============================
@@ -13595,6 +13608,8 @@
                 if (nextBtn) nextBtn.addEventListener("click", () => {
                     this.e_inputarea_candidates.scrollBy({ left: 100, behavior: "smooth" });
                 });
+
+
 
                 // 回车发送（原逻辑，保留）
                 this.e_inputarea_textarea.addEventListener('keydown', (e) => {
@@ -13883,6 +13898,7 @@
                 this.write_history = []; // 撤销历史
                 this.write_history_index = -1; // 当前历史位置
                 this.write_max_history = 50; // 最大历史记录数
+                this.writeboard_initialized = false; // 防止重复初始化
 
                 // 初始化写字板
                 this.init_writeboard = () => {
@@ -14227,8 +14243,26 @@
                 // 点击按钮打开写字板
                 this.e_writeboard_btn.addEventListener("click", () => {
                     this.e_writeboard.classList.remove("hidden");
-                    this.init_writeboard();
+                    // 重置工具状态为画笔
+                    this.write_tool_type = 'pen';
+                    this.e_writeboard_tool_toggle.innerHTML = '<i class="bi bi-eraser"></i> 橡皮';
+                    this.e_writeboard_tool_toggle.classList.remove('eraser');
+                    this.e_writeboard_cursor.classList.remove('eraser');
+                    this.e_writeboard_cursor.classList.add('pen');
+                    // 重置画布绘图状态
+                    if (this.write_ctx) {
+                        this.write_ctx.globalCompositeOperation = 'source-over';
+                        this.write_ctx.strokeStyle = document.body.classList.contains('theme-dark') ? "#fff" : "#000";
+                        this.write_ctx.lineWidth = 4;
+                    }
+                    // 只在第一次初始化时绑定事件
+                    if (!this.writeboard_initialized) {
+                        this.init_writeboard();
+                        this.writeboard_initialized = true;
+                    }
                 });
+
+
 
                 setTimeout(() => {
                     check_scroll_to_end();
@@ -14372,6 +14406,8 @@
                 } else if (contact_type === subviews.Chat.receiver_type.user) {
                     body.uid = xxid;
                 }
+
+                
 
                 try {
                     const response = await net_fetcher.nf_post_json(`${top_level_path}/chat/api/get_message_replies`, body);
@@ -15634,6 +15670,8 @@
 					onfetcherror(error);
 				});
 			}
+
+
 
             /*
             * 管理缓存的消息和渲染
@@ -18716,6 +18754,8 @@
                 }, 3000);
             }
 
+
+
             /*
             * 文本输入框
             * */
@@ -18829,6 +18869,7 @@
                 });
 
             }
+
 
             /*
             * 加载历史
@@ -22965,6 +23006,7 @@
                     }
                 });
 
+
                 const onfetchload = (result) => {
                     // if (this.closed) return;
 
@@ -23083,6 +23125,7 @@
                     }
                 }
             }
+
 
             async update_contact_item_status(status_attr) {
                 if (!this.is_active()) return;
@@ -23204,6 +23247,7 @@
 
     })()
 
+
     /*
     * APP
     * */
@@ -23301,6 +23345,7 @@
                     panel.wrapper = new dashboardwrappers.DashboardWrapper(panel);
                 }
             }
+
 
             this.login_rect = document.getElementById("login-rect"); // 登录
             this.login_tip_user = document.getElementById("login-tip-user");
@@ -23811,6 +23856,7 @@
             }
         }
 
+
         /*
         * 从首页打开应用
         * */
@@ -23822,6 +23868,7 @@
             header_btn.classList.remove("hidden");
             this.switch_panel_btn({target: header_btn,});
         }
+
 
         /*
         * 右侧页面
@@ -23991,7 +24038,9 @@
     checkin.apply_theme();
     initialize();
 
+
 </script>
+
 
 <script>
 const textarea = document.querySelector('.chat-session-inputarea-textarea');
@@ -24009,3 +24058,5 @@ if (textarea) {
 </body>
 
 </html>
+
+
