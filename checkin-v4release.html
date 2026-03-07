@@ -4233,7 +4233,11 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            overflow: visible;
+        }
+
+        /* 紧凑模式：用于需要滚动条的场景（如用户列表） */
+        details.tree-widget.tree-widget-compact {
+            min-height: 0;
         }
 
         /* 顶级节点样式 */
@@ -4260,6 +4264,7 @@
         details.tree-widget > summary.as-item {
             background-color: transparent;
             transition: all 0.1s ease-in-out;
+            border: 2px solid #9e9e9e;
         }
 
         details.tree-widget > summary.as-item:hover {
@@ -4289,6 +4294,7 @@
 
         ul.tree-items {
             overflow-y: auto;
+            overflow-x: hidden;
             flex-grow: 1;
 
             padding-left: 12px;
@@ -4477,6 +4483,8 @@
             flex-direction: column;
             gap: 4px;
             overflow-y: auto;
+            align-content: flex-start;
+            min-height: auto;
         }
 
         .drive-item {
@@ -4485,6 +4493,7 @@
             gap: 4px;
             flex-grow: 1;
             align-items: center;
+            min-height: 30px;
         }
 
         .drive-items details:last-of-type {
@@ -6281,7 +6290,7 @@
             min-height: 20px;
             position: relative;
             padding: 8px 8px 8px 40px;
-            overflow: hidden;
+            overflow: visible;
         }
         
         /* 对方消息的 padding 样式 */
@@ -8993,7 +9002,7 @@
             blank: 2,
         }
 
-        constructor(parent_element, headers, fill_menu, can_fold, as_item, can_click, align_right, item_margin_lr) {
+        constructor(parent_element, headers, fill_menu, can_fold, as_item, can_click, align_right, item_margin_lr, compact_mode) {
             this.parent_element = parent_element;
             this.headers = headers;
             this.fill_menu = fill_menu;
@@ -9002,6 +9011,7 @@
             this.can_click = can_click;  // 使summary有active效果
             this.align_right = align_right; // 内容右对齐
             this.item_margin_lr = item_margin_lr; // 自定义左右缩进
+            this.compact_mode = compact_mode; // 紧凑模式，启用 min-height: 0 以支持滚动条
 
             this.tree_headers = [];
             this.tree_items = [];
@@ -9027,6 +9037,12 @@
             this.parent_element.insertAdjacentHTML("beforeend", html);
             this.details = this.parent_element.querySelector(":scope details.tree-widget:last-of-type");
             this.details.classList.add("hidden")
+
+            // 根据紧凑模式参数添加修饰类
+            if (this.compact_mode) {
+                this.details.classList.add("tree-widget-compact");
+            }
+
             this.summary = this.details.querySelector(":scope > summary");
             this.container_tree_headers = this.details.querySelector(":scope div.tree-headers");
             this.container_tree_items = this.details.querySelector(":scope ul");
@@ -19144,24 +19160,28 @@
             async output_msgs() {
                 const contact_name = this.current_contact_name();
                 const data_string = date_string_for_fileName();
-                
-                // 检查是否在批量选择模式
-                let msgsToExport = this.li.bindmap.msgs;
-                let fileNamePrefix = "01_";
-                let extraInfo = "";
 
-                if (this.selected_messages && this.selected_messages.size > 0) {
-                    // 批量选择模式：只导出选中的消息
-                    msgsToExport = [];
-                    this.selected_messages.forEach(id => {
-                        const msg = this.li.bindmap.msgs.find(m => m.id == id);
-                        if (msg) msgsToExport.push(msg);
-                    });
-                    fileNamePrefix = "01_选中_";
-                    extraInfo = `（选中 ${msgsToExport.length} 条）`;
-                }
+                // 显示导出等待提示
+                const loadingMessage = MessageMark.report("正在导出聊天记录，请稍候...", null, null, null, MessageMark.colors.blue);
 
-                const name = `${fileNamePrefix}${contact_name}聊天记录${extraInfo}_${data_string}.md`;
+                try {
+                    // 检查是否在批量选择模式
+                    let msgsToExport = this.li.bindmap.msgs;
+                    let fileNamePrefix = "01_";
+                    let extraInfo = "";
+
+                    if (this.selected_messages && this.selected_messages.size > 0) {
+                        // 批量选择模式：只导出选中的消息
+                        msgsToExport = [];
+                        this.selected_messages.forEach(id => {
+                            const msg = this.li.bindmap.msgs.find(m => m.id == id);
+                            if (msg) msgsToExport.push(msg);
+                        });
+                        fileNamePrefix = "01_选中_";
+                        extraInfo = `（选中 ${msgsToExport.length} 条）`;
+                    }
+
+                    const name = `${fileNamePrefix}${contact_name}聊天记录${extraInfo}_${data_string}.md`;
 
                 const strings = [];
                 const imageDir = `images`;
@@ -19212,11 +19232,19 @@
                     strings.push(s);
                 }
 
-                // 导出MD文件和图片
-                if (imageFiles.length > 0) {
-                    await this.exportChatWithImages(name, strings.join("\n\n"), imageFiles);
-                } else {
-                    saveFile_from_text(strings.join("\n\n"), name);
+                    // 导出MD文件和图片
+                    if (imageFiles.length > 0) {
+                        await this.exportChatWithImages(name, strings.join("\n\n"), imageFiles);
+                    } else {
+                        saveFile_from_text(strings.join("\n\n"), name);
+                    }
+
+                    // 导出成功，关闭等待提示
+                    loadingMessage.remove();
+                } catch (error) {
+                    // 导出失败，关闭等待提示并显示错误信息
+                    loadingMessage.remove();
+                    MessageMark.report(`导出失败：${error.message || '未知错误'}`);
                 }
             }
 
@@ -20188,7 +20216,7 @@
                         {text: "当日首次上线", width: 160,},
                         {text: "当日最后在线", width: 160,},
                     ];
-                    this.tree1 = new TreeWidget(this.activity_users, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.activity_users, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
                     this.fetch_group_list();
@@ -20320,7 +20348,7 @@
                         {text: "上次在线", width: 210,},
                         {text: "所属组", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
                     this.fetch_list();
@@ -20864,7 +20892,7 @@
                         {text: "名称", width: 120,},
                         {text: "成员", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
                     this.fetch_list();
@@ -21280,7 +21308,7 @@
                         {text: "个人空间", width: 120,},
                         {text: "已使用", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
 
@@ -21616,7 +21644,7 @@
 </div>
 
 <div class="settings-description">
-    <p>格式说明：#开头为分组，|分隔短语内容（可在 | 后换行，空行仅用于提高可读性，换行后需要用 | 分隔）</p>
+    <p>格式说明：#开头为分组，短语之间用|分隔（可在 | 后换行撰写下一个短语）</p>
     <p id="settings-validation-error" class="validation-error"></p>
 </div>
 
