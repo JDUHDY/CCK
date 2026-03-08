@@ -6,6 +6,8 @@
     <link rel="icon" href="data:;base64,=" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <!-- CodeMirror 编辑器 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/lib/codemirror.min.css">
 
     <!--主题-->
     <style>
@@ -3185,42 +3187,57 @@
             max-height: 100%;
         }
 
-        /* 文本编辑框容器 */
-        .settings-textarea-container {
+        /* CodeMirror 编辑器容器（仅候选短语页面） */
+        .phrases-editor .settings-textarea-wrapper {
             flex: 1;
             display: flex;
             overflow: hidden;
             border: 1px solid #dee2e6;
             border-radius: 4px;
+            position: relative;
         }
 
-        /* 行号区域 */
-        .settings-line-numbers {
-            flex-shrink: 0;
-            width: 10px;
-            padding: 16px 8px;
-            background: #f8f9fa;
-            border-right: 1px solid #dee2e6;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        /* CodeMirror 自定义样式（仅候选短语页面） */
+        .phrases-editor .settings-textarea-wrapper .CodeMirror {
+            flex: 1;
+            height: 100%;
+            font-family: inherit;
             font-size: 14px;
             line-height: 1.6;
+        }
+
+        .phrases-editor .settings-textarea-wrapper .CodeMirror-gutters {
+            border-right: 1px solid #dee2e6;
+            background: #f8f9fa;
+            padding-right: 4px;
+        }
+
+        .phrases-editor .settings-textarea-wrapper .CodeMirror-linenumber {
             color: #999;
+            padding: 0 4px;
+            min-width: 20px;
             text-align: right;
-            user-select: none;
-            overflow: hidden;
         }
 
-        /* 文本编辑框容器 */
-        .settings-textarea-container {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
+        .phrases-editor .settings-textarea-wrapper .CodeMirror-selected {
+            background: rgba(24, 128, 255, 0.1) !important;
         }
 
-        /* 文本编辑框 - 自适应填满容器 */
-        .settings-textarea {
+        .phrases-editor .settings-textarea-wrapper .CodeMirror-cursor {
+            border-left: 2px solid #212529;
+        }
+
+        .phrases-editor .settings-textarea-wrapper .CodeMirror-guttermarker {
+            color: #ff6b6b;
+        }
+
+        /* 错误行样式（仅候选短语页面） */
+        .phrases-editor .settings-textarea-wrapper .error-line {
+            background-color: rgba(255, 0, 0, 0.25) !important;
+        }
+
+        /* 全体通知页面的普通 textarea 样式 */
+        .settings-editor textarea.settings-textarea {
             flex: 1;
             width: 100%;
             padding: 16px;
@@ -3233,21 +3250,16 @@
             box-sizing: border-box;
             font-family: inherit;
             overflow-y: auto;
+            overflow-x: hidden;
             min-height: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: break-word;
         }
 
-        /* 在容器内的 textarea 移除边框 */
-        .settings-textarea-container .settings-textarea {
-            border: none;
-            border-radius: 0;
-        }
-
-        .settings-textarea:focus {
+        .settings-editor textarea.settings-textarea:focus {
             outline: none;
-        }
-
-        .settings-textarea::placeholder {
-            color: #adb5bd;
+            border-color: #3498db;
         }
 
         /* 预览区域 */
@@ -3428,23 +3440,44 @@
             color: #fc8181;
         }
 
-        .theme-dark .settings-textarea-container {
+        .theme-dark .phrases-editor .settings-textarea-wrapper {
             border-color: #4a5568;
         }
 
-        .theme-dark .settings-line-numbers {
-            background: #1a202c;
-            border-right-color: #4a5568;
-            color: #718096;
-        }
-
-        .theme-dark .settings-textarea {
+        .theme-dark .phrases-editor .settings-textarea-wrapper .CodeMirror {
             background: #2d3748;
             color: #e2e8f0;
         }
 
-        .theme-dark .settings-textarea::placeholder {
+        .theme-dark .phrases-editor .settings-textarea-wrapper .CodeMirror-gutters {
+            background: #1a202c;
+            border-right-color: #4a5568;
+        }
+
+        .theme-dark .phrases-editor .settings-textarea-wrapper .CodeMirror-linenumber {
             color: #718096;
+        }
+
+        .theme-dark .phrases-editor .settings-textarea-wrapper .CodeMirror-cursor {
+            border-left-color: #e2e8f0;
+        }
+
+        .theme-dark .phrases-editor .settings-textarea-wrapper .CodeMirror-selected {
+            background: rgba(24, 128, 255, 0.2) !important;
+        }
+
+        .theme-dark .phrases-editor .settings-textarea-wrapper .error-line {
+            background-color: rgba(255, 0, 0, 0.35) !important;
+        }
+
+        .theme-dark .settings-editor textarea.settings-textarea {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+
+        .theme-dark .settings-editor textarea.settings-textarea:focus {
+            border-color: #3498db;
         }
 
         .theme-dark .settings-preview {
@@ -3534,8 +3567,8 @@
             inset: 0; /* 等价于 top:0; right:0; bottom:0; left:0; */
             z-index: 9;
 
-            /* 移除 backdrop-filter 以提高性能，改用更轻量的半透明背景 */
-            background: rgba(0, 0, 0, 0.7);
+            /* 移除 backdrop-filter 以提高性能 */
+            background: rgba(255, 255, 255, 0.59);
             /* backdrop-filter: blur(2px); */
             /* -webkit-backdrop-filter: blur(2px); */
 
@@ -7312,16 +7345,16 @@
         }
         if (titleTimer) return; // 防止重复启动
 
-        const text = `【${count}条新消息】`;
-        titleTimer = setInterval(() => {
-            document.title =
-                document.title === originalTitle ? text : originalTitle;
-        }, 800);
+        // 提取基础应用名称 (去掉已有的消息计数)
+        const baseTitle = originalTitle.replace(/^\(\d+\)\s*/, '');
+        
+        // 设置带消息计数的标题,不闪烁
+        document.title = `(${count})${baseTitle}`;
+        titleTimer = true; // 标记为已启动,但不实际启动定时器
     }
 
     function stopTitleFlash() {
         if (!titleTimer) return;
-        clearInterval(titleTimer);
         titleTimer = null;
         document.title = originalTitle;
     }
@@ -17977,10 +18010,10 @@
                             voteData = parseVoteData(this.msgattr.data_text);
                         }
 
-                        // 单选模式:取消选中时不需要做任何操作
-                        if (!voteData.allow_multiple && !isSelected) {
-                            return;
-                        }
+                        // 单选模式:支持取消投票(点击已选中的选项)
+                        // if (!voteData.allow_multiple && !isSelected) {
+                        //     return;
+                        // }
 
                         // 检查投票是否已结束
                         const isOngoing = voteData.status === "ongoing";
@@ -18017,8 +18050,15 @@
                                 userVotes.splice(idx, 1);
                             }
                         } else {
-                            // 单选模式:只选择当前选项
-                            voteData.votes[currentUserId] = [optionId];
+                            // 单选模式:支持取消投票
+                            const userCurrentVotes = voteData.votes[currentUserId] || [];
+                            if (userCurrentVotes.includes(optionId)) {
+                                // 如果已选中该选项,取消投票(删除用户的投票记录)
+                                delete voteData.votes[currentUserId];
+                            } else {
+                                // 否则,只选择当前选项
+                                voteData.votes[currentUserId] = [optionId];
+                            }
                         }
 
                         // 计算每个选项的票数
@@ -21648,10 +21688,9 @@
     <p id="settings-validation-error" class="validation-error"></p>
 </div>
 
-<div class="settings-editor">
-    <div class="settings-textarea-container">
-        <div class="settings-line-numbers"></div>
-        <textarea class="settings-textarea" spellcheck="false" placeholder="示例：&#10;&#10;#常用问候&#10;你好|大家好|辛苦了&#10;&#10;#工作用语&#10;收到|好的|没问题|马上处理&#10;&#10;#表情包&#10;👍|🙏|😊"></textarea>
+<div class="settings-editor phrases-editor">
+    <div class="settings-textarea-wrapper">
+        <textarea id="settings-editor-textarea" class="settings-textarea" spellcheck="false" placeholder="示例：&#10;&#10;#常用问候&#10;你好|大家好|辛苦了&#10;&#10;#工作用语&#10;收到|好的|没问题|马上处理&#10;&#10;#表情包&#10;👍|🙏|😊"></textarea>
     </div>
 </div>
 
@@ -21664,65 +21703,25 @@
                     this.e_btn_save = this.settings_rect.querySelector(":scope button.settings-btn-save");
                     this.e_save_status = this.settings_rect.querySelector(":scope span.settings-save-status");
                     this.e_validation_error = this.settings_rect.querySelector(":scope p#settings-validation-error");
-                    this.e_line_numbers = this.settings_rect.querySelector(":scope .settings-line-numbers");
 
                     this.e_btn_save.addEventListener("click", (event) => {
                         this.save();
                     });
 
-                    // 更新行号
-                    const updateLineNumbers = () => {
-                        const lines = this.e_textarea.value.split('\n');
-                        const textarea = this.e_textarea;
-                        const style = window.getComputedStyle(textarea);
-                        const paddingLeft = parseFloat(style.paddingLeft);
-                        const paddingRight = parseFloat(style.paddingRight);
-                        const availableWidth = textarea.clientWidth - paddingLeft - paddingRight;
-                        const fontSize = parseFloat(style.fontSize);
-                        const fontFamily = style.fontFamily;
-
-                        // 创建一个临时的 canvas 来计算文本宽度
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        ctx.font = `${fontSize}px ${fontFamily}`;
-
-                        const lineNumbers = [];
-
-                        lines.forEach((line, index) => {
-                            const lineNum = index + 1;
-
-                            // 如果是空行，直接添加一个行号
-                            if (line === '') {
-                                lineNumbers.push(lineNum);
-                                return;
-                            }
-
-                            // 计算这行文本在当前宽度下会占用多少视觉行
-                            const textWidth = ctx.measureText(line).width;
-                            const estimatedLines = Math.ceil(textWidth / availableWidth);
-
-                            // 为每个视觉行的开头添加行号
-                            for (let i = 0; i < estimatedLines; i++) {
-                                if (i === 0) {
-                                    lineNumbers.push(lineNum);
-                                } else {
-                                    lineNumbers.push('');
-                                }
-                            }
-                        });
-
-                        this.e_line_numbers.innerHTML = lineNumbers.join('<br>');
-                    };
-
-                    // 同步滚动
-                    this.e_textarea.addEventListener("scroll", () => {
-                        this.e_line_numbers.scrollTop = this.e_textarea.scrollTop;
+                    // 初始化 CodeMirror 编辑器
+                    this.editor = CodeMirror.fromTextArea(this.e_textarea, {
+                        lineNumbers: true,              // 显示行号
+                        lineWrapping: true,             // 自动换行
+                        indentUnit: 4,                  // 缩进单位
+                        tabSize: 4,                     // Tab 大小
+                        indentWithTabs: false,          // 使用空格缩进
+                        gutters: ["CodeMirror-linenumbers"], // 只显示行号
+                        viewportMargin: Infinity,       // 渲染所有行
                     });
 
-                    // 实时验证格式和更新行号
-                    this.e_textarea.addEventListener("input", () => {
+                    // 监听内容变化，实时验证格式
+                    this.editor.on("change", () => {
                         this.validate_format();
-                        updateLineNumbers();
                     });
 
                     this.load();
@@ -21730,8 +21729,9 @@
 
                 // 验证格式并显示错误
                 validate_format() {
-                    const text = this.e_textarea.value;
+                    const text = this.editor.getValue();
                     const errors = [];
+                    const errorLines = new Set(); // 存储错误行号
                     const lines = text.split('\n');
 
                     for (let i = 0; i < lines.length; i++) {
@@ -21749,22 +21749,26 @@
                             const category = line.substring(1).trim();
                             if (category === "") {
                                 errors.push(`第 ${lineNum} 行：分组名不能为空`);
+                                errorLines.add(lineNum);
                             }
                             // 检查分组名是否包含非法字符（#或|）
                             if (category.includes('#') || category.includes('|')) {
                                 errors.push(`第 ${lineNum} 行：分组名不能包含 # 或 |`);
+                                errorLines.add(lineNum);
                             }
                         } else {
                             const trimmed_line = line.trim();
                             // 检查短语行是否以 | 开头（不允许）
                             if (trimmed_line.startsWith('|')) {
                                 errors.push(`第 ${lineNum} 行：不能以 | 开头`);
+                                errorLines.add(lineNum);
                             }
                             // 检查短语是否包含分组标记
                             const phrases = trimmed_line.split('|').map(p => p.trim());
                             const invalidPhrases = phrases.filter(p => p !== '' && p.includes('#'));
                             if (invalidPhrases.length > 0) {
                                 errors.push(`第 ${lineNum} 行：短语内容不能包含 #`);
+                                errorLines.add(lineNum);
                             }
                         }
                     }
@@ -21798,11 +21802,15 @@
                                 // 如果不以 | 开头，说明缺少 |
                                 if (!nextLine.startsWith('|')) {
                                     errors.push(`第 ${i + 1} 行：换行后缺少 |（短语之间需要用 | 分隔）`);
+                                    errorLines.add(i + 1);
                                 }
                                 break;
                             }
                         }
                     }
+
+                    // 使用 CodeMirror API 标记错误行
+                    this._markErrorLines(errorLines);
 
                     if (errors.length > 0) {
                         this.e_validation_error.innerHTML = errors.join('<br>');
@@ -21815,6 +21823,25 @@
                     }
                 }
 
+                // 使用 CodeMirror API 标记错误行
+                _markErrorLines(errorLines) {
+                    // 清除所有现有的标记
+                    this.editor.getAllMarks().forEach(mark => mark.clear());
+
+                    // 遍历所有行，标记错误行
+                    this.editor.eachLine((lineHandle) => {
+                        const lineNum = this.editor.getLineNumber(lineHandle) + 1;
+
+                        if (errorLines.has(lineNum)) {
+                            // 添加背景高亮
+                            this.editor.addLineClass(lineNum - 1, 'background', 'error-line');
+                        } else {
+                            // 移除该行的错误标记
+                            this.editor.removeLineClass(lineNum - 1, 'background', 'error-line');
+                        }
+                    });
+                }
+
                 async load() {
                     try {
                         this.loading_mark.show();
@@ -21824,14 +21851,13 @@
                             const decrypted = await frontCrypto.decrypt(result.value, frontCrypto.SYSTEM_ENCRYPTION_KEY);
                             // 解析 JSON 并转换为文本格式
                             const json = JSON.parse(decrypted);
-                            this.e_textarea.value = this._json_to_text(json);
+                            this.editor.setValue(this._json_to_text(json));
                         } else {
                             // 如果数据库中没有数据，设置为空
-                            this.e_textarea.value = "";
+                            this.editor.setValue("");
                         }
-                        // 更新行号
-                        const lines = this.e_textarea.value.split('\n');
-                        this.e_line_numbers.innerHTML = lines.map((_, index) => index + 1).join('<br>');
+                        // 初始化时验证格式并高亮错误行
+                        this.validate_format();
                         this.remove_loading_mark();
                     } catch (error) {
                         this.remove_loading_mark();
@@ -21840,7 +21866,7 @@
                             MessageMark.report(error);
                         } else {
                             // 404 表示配置项不存在，这是正常情况
-                            this.e_textarea.value = "";
+                            this.editor.setValue("");
                         }
                     }
                 }
@@ -21856,7 +21882,7 @@
                         this.loading_mark.show();
                         this.e_save_status.textContent = "保存中...";
                         // 将文本格式转换为 JSON
-                        const json = this._text_to_json(this.e_textarea.value);
+                        const json = this._text_to_json(this.editor.getValue());
                         // 加密数据
                         const encrypted = await frontCrypto.encrypt(JSON.stringify(json), frontCrypto.SYSTEM_ENCRYPTION_KEY);
                         await this.client.subviews.admin.update_settings("common_phrases", encrypted);
@@ -22744,7 +22770,8 @@
                 }
 
                 if (status_attr.type === subviews.Chat.receiver_type.group) {
-                    item.e_online_status.dataset.onlineStatus = status_attr.online_count > 0 ? "online" : "offline";
+                    // 修改: 至少2人在线才显示绿灯
+                    item.e_online_status.dataset.onlineStatus = status_attr.online_count >= 2 ? "online" : "offline";
                 } else if (status_attr.type === subviews.Chat.receiver_type.user) {
                     item.e_online_status.dataset.onlineStatus = status_attr.online_status === ChatDashboardWrapper.online_status.online ? "online" : "offline";
                 }
@@ -23807,7 +23834,7 @@
             if (jumpto.backend_panel) return;
             let app_name = "";
             if (!logged_user) {
-            } else {
+            } else if (header_btn) {
                 app_name = header_btn.textContent;
             }
             if (app_name) app_name = " - " + app_name;
@@ -24098,7 +24125,13 @@
         switch_panel(event) {
             if (jumpto.backend_panel) return;
             const btn = this.current_panel_btn();
-            this.set_title(btn);
+            // 修复: 只有当 btn 不为 null 时才调用 set_title
+            if (btn) {
+                this.set_title(btn);
+            } else {
+                // 如果没有选中的按钮,设置默认标题
+                document.title = this.name;
+            }
             const current_panel = this.current_panel();
             if (current_panel) current_panel.wrapper.leave();
             for (const panel of this.panels) panel.classList.remove("active")
@@ -24435,6 +24468,9 @@ if (textarea) {
 }
 </script>
 <!---->
+
+<!-- CodeMirror 编辑器 -->
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/lib/codemirror.min.js"></script>
 
 <div id="chat-toast-container"></div>
 
