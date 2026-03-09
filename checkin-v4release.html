@@ -7428,7 +7428,7 @@
     const full_width_space = "　";
 
     function is_theme_dark() {
-        return (localStorage.getItem("theme") === "dark");
+        return (sessionStorage.getItem("theme") === "dark");
     }
 
     // 按住alt后某些元素设为文本可选 // 没用上
@@ -7809,53 +7809,107 @@
 
 
     /*
+    * 全局请求队列管理器 - 用于控制并发请求数量，避免 Too many API requests 错误
+    * */
+    const RequestQueue = (() => {
+        const MAX_CONCURRENT_REQUESTS = 5; // 最大并发请求数
+        const REQUEST_DELAY_MS = 100; // 请求间隔（毫秒）
+
+        let activeRequests = 0;
+        let pendingRequests = [];
+
+        async function execute(requestFn) {
+            // 如果达到最大并发数，将请求加入队列
+            if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+                await new Promise(resolve => {
+                    pendingRequests.push(resolve);
+                });
+            }
+
+            activeRequests++;
+
+            try {
+                // 等待一小段时间，避免请求过于集中
+                if (activeRequests > 1) {
+                    await new Promise(resolve => setTimeout(resolve, REQUEST_DELAY_MS));
+                }
+
+                return await requestFn();
+            } finally {
+                activeRequests--;
+                // 处理队列中的下一个请求
+                if (pendingRequests.length > 0) {
+                    const nextResolve = pendingRequests.shift();
+                    nextResolve();
+                }
+            }
+        }
+
+        return {
+            execute,
+            getStats: () => ({
+                active: activeRequests,
+                pending: pendingRequests.length,
+            })
+        };
+    })();
+
+    /*
     * 请求模板
     * */
     const net_fetcher = {
         nf_get: async (url, params, headers) => {
-            const _url = new URL(url);
-            if (params) {
-                for (const key of Object.keys(params)) {
-                    if (params[key] === undefined) continue;
-                    _url.searchParams.set(key, params[key])
+            return await RequestQueue.execute(async () => {
+                const _url = new URL(url);
+                if (params) {
+                    for (const key of Object.keys(params)) {
+                        if (params[key] === undefined) continue;
+                        _url.searchParams.set(key, params[key])
+                    }
                 }
-            }
-            return await fetch(_url, {
-                method: "GET", headers: {
-                    ...headers,
-                },
-                credentials: 'include',
+                return await fetch(_url, {
+                    method: "GET", headers: {
+                        ...headers,
+                    },
+                    credentials: 'include',
+                });
             });
         },
 
         nf_delete: async (url, headers) => {
-            return await fetch(url, {
-                method: "DELETE", headers: {
-                    ...headers,
-                },
-                credentials: 'include',
+            return await RequestQueue.execute(async () => {
+                return await fetch(url, {
+                    method: "DELETE", headers: {
+                        ...headers,
+                    },
+                    credentials: 'include',
+                });
             });
         },
 
         nf_post_json: async (url, json, headers) => {
-            return await fetch(url, {
-                method: "POST", headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-                body: JSON.stringify(json),
+            return await RequestQueue.execute(async () => {
+                return await fetch(url, {
+                    method: "POST", headers: {
+                        ...headers,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(json),
+                });
             });
         },
 
         nf_put_json: async (url, json, headers) => {
-            return await fetch(url, {
-                method: "PUT", headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-                body: JSON.stringify(json),
+            return await RequestQueue.execute(async () => {
+                return await fetch(url, {
+                    method: "PUT", headers: {
+                        ...headers,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(json),
+                });
             });
         },
 
@@ -7866,8 +7920,25 @@
     * 前端加密解密工具（与后端 systemCrypto 保持一致）
     * */
     const frontCrypto = {
-        // 系统加密密钥（与后端一致）
-        SYSTEM_ENCRYPTION_KEY: "CheckinSystemEncryptionKey2025",
+        // 从 sessionStorage 获取加密密钥
+        getEncryptionKey() {
+            return sessionStorage.getItem('system_encryption_key');
+        },
+
+        // 保存加密密钥到 sessionStorage
+        setEncryptionKey(key) {
+            sessionStorage.setItem('system_encryption_key', key);
+        },
+
+        // 清除加密密钥
+        clearEncryptionKey() {
+            sessionStorage.removeItem('system_encryption_key');
+        },
+
+        // 检查是否有加密密钥
+        hasEncryptionKey() {
+            return sessionStorage.getItem('system_encryption_key') !== null;
+        },
 
         // 密钥派生函数：从字符串密码生成加密密钥
         async deriveKey(password) {
@@ -8125,12 +8196,12 @@
     {
         const uhj = url_hash_json();
 
-        let theme = localStorage.getItem("theme") || ""; // 主题
+        let theme = sessionStorage.getItem("theme") || ""; // 主题
         if (form_field_checker.ffc_string(uhj.theme, true)) {
             // if (theme.length === 0)
             theme = uhj.theme;
         }
-        localStorage.setItem("theme", theme);
+        sessionStorage.setItem("theme", theme);
     }
 
 
@@ -9983,14 +10054,14 @@
                 const uhj = url_hash_json();
 
 
-                const legacykeys = JSON.parse(localStorage.getItem("legacykeys")) || [];
+                const legacykeys = JSON.parse(sessionStorage.getItem("legacykeys")) || [];
                 if (form_field_checker.ffc_array(uhj.legacykeys)) {
                     uhj.legacykeys.forEach(i => {
                         i = i.replace(/[\r\n]+/g, "");
                         if (!legacykeys.includes(i)) legacykeys.push(i);
                     });
                 }
-                let currentkey = localStorage.getItem("currentkey") || "";
+                let currentkey = sessionStorage.getItem("currentkey") || "";
                 currentkey = currentkey.replace(/[\r\n]+/g, "");
                 if (form_field_checker.ffc_string(uhj.currentkey)) {
                     uhj.currentkey = uhj.currentkey.replace(/[\r\n]+/g, "");
@@ -10011,7 +10082,7 @@
 
             saveSettings() {
                 const currentkey = this.e_settings_currentkey.value.replace(/^[\s\f]+|[\s\f]+$/g, "");
-                localStorage.setItem("currentkey", currentkey);
+                sessionStorage.setItem("currentkey", currentkey);
 
                 let legacykeys = this.e_settings_legacykeys.value.split(/[\r\n]+/g).map((i) => {
                     return i.replace(/^[\s\f]+|[\s\f]+$/g, "");
@@ -10020,7 +10091,7 @@
                     if (!acc.includes(cur) && cur.length > 0) acc.push(cur);
                     return acc;
                 }, []);
-                localStorage.setItem("legacykeys", JSON.stringify(legacykeys));
+                sessionStorage.setItem("legacykeys", JSON.stringify(legacykeys));
 
                 encryptors.recreate_all([currentkey, ...legacykeys]);
             }
@@ -10205,7 +10276,23 @@
                 let r = await net_fetcher.nf_post_json(url, body);
                 if (r.status === 200) {
                     let d = await r.json();
+                    // 登录成功后，获取加密密钥
+                    await this.getEncryptionKey();
                     return d;
+                }
+                throw new Error(await format_error_response(r));
+            }
+
+            // 获取加密密钥
+            async getEncryptionKey() {
+                let url = join_path(this.api_url(), "get_encryption_key");
+                let r = await net_fetcher.nf_get(url);
+                if (r.status === 200) {
+                    let d = await r.json();
+                    if (d.success && d.key) {
+                        frontCrypto.setEncryptionKey(d.key);
+                    }
+                    return;
                 }
                 throw new Error(await format_error_response(r));
             }
@@ -10221,9 +10308,23 @@
                 let body = {password,}
                 let r = await net_fetcher.nf_post_json(url, body);
                 if (r.status === 200) {
-                    // let d = await r.json();
-                    // this.session_key = d.session_key; // 改为设置cookies吧
+                    // 登录成功后，获取加密密钥
+                    await this.getEncryptionKey();
                     return true;
+                }
+                throw new Error(await format_error_response(r));
+            }
+
+            // 获取加密密钥
+            async getEncryptionKey() {
+                let url = join_path(this.api_url(), "get_encryption_key");
+                let r = await net_fetcher.nf_get(url);
+                if (r.status === 200) {
+                    let d = await r.json();
+                    if (d.success && d.key) {
+                        frontCrypto.setEncryptionKey(d.key);
+                    }
+                    return;
                 }
                 throw new Error(await format_error_response(r));
             }
@@ -13425,16 +13526,45 @@
                 // 从后端获取候选词
                 const fetchCandidates = async (filter = "") => {
                     try {
-                        const url = filter === ""
-                            ? `${top_level_path}/chat/api/candidates`
-                            : `${top_level_path}/chat/api/candidates?filter=${encodeURIComponent(filter)}`;
+                        // 总是获取所有数据（不带筛选参数）
+                        const url = `${top_level_path}/chat/api/candidates`;
                         const response = await fetch(url, { credentials: 'include' });
                         if (!response.ok) {
                             const errorText = await response.text();
                             throw new Error(`获取候选词失败 (${response.status}): ${errorText}`);
                         }
                         const result = await response.json();
-                        return result.success ? result.data : [];
+
+                        if (!result.success) {
+                            return [];
+                        }
+
+                        // 如果返回的是加密数据，先解密
+                        if (result.encrypted && result.data) {
+                            try {
+                                const encryptionKey = frontCrypto.getEncryptionKey();
+                                if (!encryptionKey) {
+                                    console.warn("加密密钥未设置，无法解密候选词");
+                                    return [];
+                                }
+                                const decrypted = await frontCrypto.decrypt(result.data, encryptionKey);
+                                const data = JSON.parse(decrypted);
+
+                                // 如果有筛选参数，在前端进行筛选
+                                if (filter !== "") {
+                                    const flatList = data.flatMap(group => group.items || []);
+                                    return flatList.filter(p => p.includes(filter));
+                                }
+
+                                return data;
+                            } catch (decryptError) {
+                                console.warn("解密候选词失败（可能是密码已更改）:", decryptError.message);
+                                return [];
+                            }
+                        }
+
+                        // 如果返回的是明文数据，直接返回
+                        return result.data || [];
                     } catch (error) {
                         console.error("获取候选词失败:", error);
                         MessageMark.report(`获取候选词失败: ${error.message}`);
@@ -13510,6 +13640,8 @@
                         _chat.hasUserClosedCandidatesPanel = true;
                         autoShowSmallCandidatesPanel = false;
                         container.classList.add('hidden');
+                        // 重置横向滚动位置到左边
+                        container.scrollLeft = 0;
                     });
 
                     // 插入到最前面
@@ -13627,8 +13759,18 @@
                     // 检查内存变量
                     if (!autoShowSmallCandidatesPanel) return;
 
-                    // 直接显示扁平化的候选词列表，不进行筛选
-                    renderCandidates(commonPhrasesFlat);
+                    // 获取输入框的当前值
+                    const inputValue = this.e_inputarea_textarea.value.trim();
+
+                    // 根据输入内容筛选小候选词面板
+                    const filteredList = inputValue
+                        ? commonPhrasesFlat.filter(item => item && item.includes(inputValue))
+                        : commonPhrasesFlat;
+
+                    // 显示筛选后的候选词列表
+                    renderCandidates(filteredList);
+                    // 重置横向滚动位置到左边
+                    this.e_inputarea_candidates.scrollLeft = 0;
                 });
 
                 // focus 显示候选词（点击输入框时显示）
@@ -13637,6 +13779,8 @@
                     if (!_chat.hasUserClosedCandidatesPanel) {
                         autoShowSmallCandidatesPanel = true;
                         renderCandidates(commonPhrasesFlat.length > 0 ? commonPhrasesFlat : []);
+                        // 重置横向滚动位置到左边
+                        this.e_inputarea_candidates.scrollLeft = 0;
                     }
                 });
 
@@ -13695,16 +13839,22 @@
 
 						this.render_candidate_panel(commonPhrases.length > 0 ? commonPhrases : []);
 						this.e_candidate_panel.classList.remove("hidden");
+						// 重置候选词面板滚动位置到顶部
+						this.e_candidate_panel_body.scrollTop = 0;
 						// 传入保存的滚动位置
 						adjustMsgflowHeight(savedScrollTop, savedIsAtBottom);
 					} else {
 						this.e_candidate_panel.classList.add("hidden");
+						// 重置候选词面板滚动位置到顶部
+						this.e_candidate_panel_body.scrollTop = 0;
 						adjustMsgflowHeight();
 					}
 				});
 
 				this.e_candidate_panel_close.addEventListener("click", () => {
 					this.e_candidate_panel.classList.add("hidden");
+					// 重置候选词面板滚动位置到顶部
+					this.e_candidate_panel_body.scrollTop = 0;
 					adjustMsgflowHeight();
 				});
 
@@ -14708,6 +14858,8 @@
             async handle_response__fetch_unread_msgs(last_msgattr, result, is_background = true) {
                 if (!this.client.dashboard_chat.wrapper.is_active()) return;
 
+                console.log(`[消息加载] 本次加载了 ${result.messages.length} 条消息`);
+
                 let need_refresh_replies = false;
 
                 if (result.is_found_last_message) { // 按请求的起始消息
@@ -15503,6 +15655,11 @@
 
                 // 如果消息是置顶的，先取消置顶
                 const doRevoke = () => {
+                    // 保存滚动位置
+                    const savedScrollTop = this.e_msgflow.scrollTop;
+                    const scrollBottom = this.e_msgflow.scrollHeight - this.e_msgflow.scrollTop - this.e_msgflow.clientHeight;
+                    const wasAtBottom = scrollBottom <= 10;
+
                     const onfetchload = (result) => {
                         // if (this.closed) return;
                         if (result && result.sync && result.message_attr) {
@@ -15514,6 +15671,15 @@
                                 this.client.dashboard_chat.wrapper.update_contact_item_status(result.sync);
                             }
                             this.msgflow_manage.update_msg(msgattr, result.message_attr,);
+
+                            // 恢复滚动位置
+                            requestAnimationFrame(() => {
+                                if (wasAtBottom) {
+                                    this.e_msgflow.scrollTop = this.e_msgflow.scrollHeight;
+                                } else {
+                                    this.e_msgflow.scrollTop = savedScrollTop;
+                                }
+                            });
                         } else {
                             MessageMark.report("删除失败：返回数据不完整");
                             msgattr.msgobj.unblur_content();
@@ -21848,10 +22014,24 @@
                         const result = await this.client.subviews.admin.get_settings("common_phrases");
                         if (result && result.value) {
                             // 解密数据
-                            const decrypted = await frontCrypto.decrypt(result.value, frontCrypto.SYSTEM_ENCRYPTION_KEY);
-                            // 解析 JSON 并转换为文本格式
-                            const json = JSON.parse(decrypted);
-                            this.editor.setValue(this._json_to_text(json));
+                            const encryptionKey = frontCrypto.getEncryptionKey();
+                            if (!encryptionKey) {
+                                console.warn("加密密钥未设置，无法加载候选词");
+                                this.editor.setValue("");
+                                this.validate_format();
+                                this.remove_loading_mark();
+                                return;
+                            }
+                            try {
+                                const decrypted = await frontCrypto.decrypt(result.value, encryptionKey);
+                                // 解析 JSON 并转换为文本格式
+                                const json = JSON.parse(decrypted);
+                                this.editor.setValue(this._json_to_text(json));
+                            } catch (decryptError) {
+                                // 解密失败时（密码已更改），只在控制台输出警告
+                                console.warn("解密候选词数据失败（可能是密码已更改）:", decryptError.message);
+                                this.editor.setValue("");
+                            }
                         } else {
                             // 如果数据库中没有数据，设置为空
                             this.editor.setValue("");
@@ -21861,11 +22041,10 @@
                         this.remove_loading_mark();
                     } catch (error) {
                         this.remove_loading_mark();
-                        // 忽略404错误（配置项不存在），其他错误才显示
-                        if (!error.message || !error.message.includes("404")) {
+                        // 忽略404错误（配置项不存在）和解密错误，其他错误才显示
+                        if (error.message && !error.message.includes("404") && (!error.name || !error.name.includes("OperationError"))) {
                             MessageMark.report(error);
                         } else {
-                            // 404 表示配置项不存在，这是正常情况
                             this.editor.setValue("");
                         }
                     }
@@ -21884,7 +22063,11 @@
                         // 将文本格式转换为 JSON
                         const json = this._text_to_json(this.editor.getValue());
                         // 加密数据
-                        const encrypted = await frontCrypto.encrypt(JSON.stringify(json), frontCrypto.SYSTEM_ENCRYPTION_KEY);
+                        const encryptionKey = frontCrypto.getEncryptionKey();
+                        if (!encryptionKey) {
+                            throw new Error("加密密钥未设置，请重新登录");
+                        }
+                        const encrypted = await frontCrypto.encrypt(JSON.stringify(json), encryptionKey);
                         await this.client.subviews.admin.update_settings("common_phrases", encrypted);
                         this.e_save_status.textContent = "保存成功！";
                         this.remove_loading_mark();
@@ -21959,9 +22142,22 @@
                         const result = await this.client.subviews.admin.get_settings("all_people_notice");
                         if (result && result.value) {
                             // 解密数据
-                            const decrypted = await frontCrypto.decrypt(result.value, frontCrypto.SYSTEM_ENCRYPTION_KEY);
-                            this.e_textarea.value = decrypted;
-                            this.update_preview();
+                            const encryptionKey = frontCrypto.getEncryptionKey();
+                            if (!encryptionKey) {
+                                console.warn("加密密钥未设置，无法加载全体通知");
+                                this.e_textarea.value = "";
+                                this.remove_loading_mark();
+                                return;
+                            }
+                            try {
+                                const decrypted = await frontCrypto.decrypt(result.value, encryptionKey);
+                                this.e_textarea.value = decrypted;
+                                this.update_preview();
+                            } catch (decryptError) {
+                                // 解密失败时（密码已更改），只在控制台输出警告
+                                console.warn("解密全体通知数据失败（可能是密码已更改）:", decryptError.message);
+                                this.e_textarea.value = "";
+                            }
                         } else {
                             // 如果数据库中没有数据，设置为空
                             this.e_textarea.value = "";
@@ -21969,11 +22165,10 @@
                         this.remove_loading_mark();
                     } catch (error) {
                         this.remove_loading_mark();
-                        // 忽略404错误（配置项不存在），其他错误才显示
-                        if (!error.message || !error.message.includes("404")) {
+                        // 忽略404错误（配置项不存在）和解密错误，其他错误才显示
+                        if (error.message && !error.message.includes("404") && (!error.name || !error.name.includes("OperationError"))) {
                             MessageMark.report(error);
                         } else {
-                            // 404 表示配置项不存在，这是正常情况
                             this.e_textarea.value = "";
                         }
                     }
@@ -21988,7 +22183,11 @@
                         this.loading_mark.show();
                         this.e_save_status.textContent = "保存中...";
                         // 加密数据
-                        const encrypted = await frontCrypto.encrypt(this.e_textarea.value, frontCrypto.SYSTEM_ENCRYPTION_KEY);
+                        const encryptionKey = frontCrypto.getEncryptionKey();
+                        if (!encryptionKey) {
+                            throw new Error("加密密钥未设置，请重新登录");
+                        }
+                        const encrypted = await frontCrypto.encrypt(this.e_textarea.value, encryptionKey);
                         await this.client.subviews.admin.update_settings("all_people_notice", encrypted);
                         this.e_save_status.textContent = "保存成功！";
                         this.remove_loading_mark();
@@ -23843,9 +24042,9 @@
 
         switch_theme() {
             if (is_theme_dark()) {
-                localStorage.removeItem("theme");
+                sessionStorage.removeItem("theme");
             } else {
-                localStorage.setItem("theme", "dark");
+                sessionStorage.setItem("theme", "dark");
             }
             this.apply_theme();
         }
@@ -24020,6 +24219,8 @@
 
         logout(event) {
             if (jumpto.backend_panel) {
+                // 清除加密密钥
+                frontCrypto.clearEncryptionKey();
                 delete_cookie("admin_session_id");
                 this.open_admin_page(null, true);
             } else {
@@ -24027,10 +24228,14 @@
                 loading_mark.show();
                 this.subviews.me.logout()
                     .then(result => {
+                        // 清除加密密钥
+                        frontCrypto.clearEncryptionKey();
                         // if (this.closed) return;
                         delete_cookie("session_id");
                         this.open_startpage(null, true);
                     }).catch(error => {
+                    // 清除加密密钥
+                    frontCrypto.clearEncryptionKey();
                     // if (this.closed) return;
                     delete_cookie("session_id");
                     this.open_startpage(null, true);
@@ -24075,22 +24280,22 @@
         }
 
         save_selected_panel_id(header_btn) {
-            localStorage.setItem("selected_panel_id", header_btn.id);
+            sessionStorage.setItem("selected_panel_id", header_btn.id);
         }
 
         clear_selected_panel_id() {
-            localStorage.removeItem("selected_panel_id");
+            sessionStorage.removeItem("selected_panel_id");
         }
 
         restore_selected_panel_id() {
             // if (jumpto.backend_panel) return;
-            // const id = localStorage.getItem("selected_panel_id");
+            // const id = sessionStorage.getItem("selected_panel_id");
             // for (const headerBtn of this.header_btns) {
             //     if (headerBtn.id === id) {
             //         headerBtn.click();
-            //         return;
-            //     }
-            // }
+            //                 return;
+            //             }
+            //         }
             // this.header_btn_chat.click();
 
             this.header_btn_startpage.click();
@@ -24372,15 +24577,31 @@
                 const notificationElement = document.querySelector("#apps-notification");
                 if (result && result.success && result.data && result.data.trim() !== "") {
                     // 解密数据
-                    const decryptedText = await frontCrypto.decrypt(result.data, frontCrypto.SYSTEM_ENCRYPTION_KEY);
-                    if (notificationElement) {
-                        const pElement = notificationElement.querySelector("p.apps-item-name");
-                        if (pElement) {
-                            // 使用MarkdownResolver解析并显示
-                            pElement.innerHTML = MarkdownResolver.to_html(decryptedText);
+                    const encryptionKey = frontCrypto.getEncryptionKey();
+                    if (!encryptionKey) {
+                        console.warn("加密密钥未设置，无法解密全体通知");
+                        if (notificationElement) {
+                            notificationElement.style.display = "none";
                         }
-                        // 显示通知元素
-                        notificationElement.style.display = "block";
+                        return;
+                    }
+                    try {
+                        const decryptedText = await frontCrypto.decrypt(result.data, encryptionKey);
+                        if (notificationElement) {
+                            const pElement = notificationElement.querySelector("p.apps-item-name");
+                            if (pElement) {
+                                // 使用MarkdownResolver解析并显示
+                                pElement.innerHTML = MarkdownResolver.to_html(decryptedText);
+                            }
+                            // 显示通知元素
+                            notificationElement.style.display = "block";
+                        }
+                    } catch (decryptError) {
+                        // 解密失败时（密码已更改），只在控制台输出警告
+                        console.warn("解密全体通知失败（可能是密码已更改）:", decryptError.message);
+                        if (notificationElement) {
+                            notificationElement.style.display = "none";
+                        }
                     }
                 } else {
                     // 如果没有数据，隐藏整个通知元素
@@ -24392,7 +24613,13 @@
                 throw new Error(`HTTP ${response.status}`);
             }
         } catch (error) {
+            // 只在控制台输出错误，不显示在页面上
             console.error("加载全体通知失败:", error);
+            // 隐藏通知元素
+            const notificationElement = document.querySelector("#apps-notification");
+            if (notificationElement) {
+                notificationElement.style.display = "none";
+            }
         }
     }
 
