@@ -7564,12 +7564,12 @@
         // 将 img 内容绘制到 canvas
         ctx.drawImage(img, 0, 0);
         // 获取 Base64
-        // const base64 = canvas.toDataURL('image/png');
+        // const base64 = canvas.toDataURL('image/jpg');
 
         // 获取 Blob
         canvas.toBlob(blob => {
             callback(blob);
-        }, 'image/png');
+        }, 'image/jpg');
     }
 
     function check_if_contains_file_in_drop_event(event) {
@@ -14543,7 +14543,7 @@
 
                     // 从临时 canvas 生成 blob
                     tempCanvas.toBlob((blob) => {
-                        const file = new File([blob], "手写的图片.png", { type: "image/png" });
+                        const file = new File([blob], "手写的图片.jpg", { type: "image/jpg" });
                         this.start__send_msg_image(file); // 调用你现有发图片逻辑
                         this.e_writeboard.classList.add("hidden");
 
@@ -14554,7 +14554,7 @@
                         // 清空撤销/恢复历史记录
                         this.write_history = [];
                         this.write_history_index = -1;
-                    }, "image/png");
+                    }, "image/jpg");
                 });
 
                 // 点击按钮打开写字板
