@@ -2676,7 +2676,7 @@
 
         .aside-left {
             flex-grow: 1;
-            overflow: auto;
+            overflow: hidden;
 
             display: flex;
             flex-direction: column;
@@ -2717,12 +2717,14 @@
             display: flex;
             padding: 0px 8px 0px 8px;
             position: relative;
+            min-height: 0;
         }
 
         .aside-right > div {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         .aside-divider {
@@ -2776,6 +2778,11 @@
             padding: 4px;
             border-radius: 4px;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .theme-dark .aside-left > nav {
@@ -2788,6 +2795,28 @@
             padding: 0;
             margin: 0;
             border-radius: 4px;
+
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* 细滚动条样式 */
+        .nav-buttons::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .nav-buttons::-webkit-scrollbar-track {
+            // background: transparent;
+        }
+
+        .nav-buttons::-webkit-scrollbar-thumb {
+            background: rgb(139 139 139);
+            border-radius: 2px;
+        }
+
+        .nav-buttons::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* li 默认样式，无背景 */
@@ -2817,6 +2846,15 @@
             border: #2088ee 0 solid;
             border-radius: 2px;
             border-left-width: 4px;
+        }
+
+        /* 暗色主题 - 细滚动条 */
+        .theme-dark .nav-buttons::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-dark .nav-buttons::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
     </style>
@@ -3585,6 +3623,11 @@
             flex-grow: 1;
         }
 
+        /* 紧凑模式：用于需要滚动条的场景（如用户列表） */
+        details.tree-widget.tree-widget-compact {
+            min-height: 0;
+        }
+
         /* 顶级节点样式 */
         details.tree-widget > summary {
             list-style: none;
@@ -3638,6 +3681,7 @@
 
         ul.tree-items {
             overflow-y: auto;
+            overflow-x: hidden;
             flex-grow: 1;
 
             padding-left: 12px;
@@ -3690,6 +3734,7 @@
             flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
         }
 
         .drive-header {
@@ -3808,8 +3853,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-
-            overflow: auto;
+            min-height: 0;
         }
 
         .drive-items-wrap.drag-active {
@@ -3825,9 +3869,9 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-
-            /*overflow-y: auto;*/
-            /*flex-grow: 1;*/
+            overflow-y: auto;
+            align-content: flex-start;
+            min-height: auto;
         }
 
         .drive-item {
@@ -3963,12 +4007,19 @@
             flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .activity-filter {
             display: flex;
             flex-direction: row;
-            gap: 8px;
+            background: linear-gradient(to bottom, #CCE5FF88, transparent);
+            border-radius: 4px;
+            padding: 6px 4px;
+            gap: 4px;
+            margin-bottom: 2px;
+            flex-shrink: 0;
         }
 
         .activity-filter > label > *:first-child {
@@ -3977,9 +4028,10 @@
 
         .activity-users {
             display: flex;
-            flex-direction: column;
             flex-grow: 1;
             gap: 4px;
+            min-height: 0;
+            overflow: hidden;
         }
 
     </style>
@@ -4769,6 +4821,7 @@
             overflow-y: auto;
 
             gap: 2px;
+            padding-bottom: 50px;  /* 为候选词容器预留空间 */
         }
 
         .chat-session-msgflow-mark-onlineusers {
@@ -7827,7 +7880,7 @@
             blank: 2,
         }
 
-        constructor(parent_element, headers, fill_menu, can_fold, as_item, can_click, align_right, item_margin_lr) {
+        constructor(parent_element, headers, fill_menu, can_fold, as_item, can_click, align_right, item_margin_lr, compact_mode) {
             this.parent_element = parent_element;
             this.headers = headers;
             this.fill_menu = fill_menu;
@@ -7836,6 +7889,7 @@
             this.can_click = can_click;  // 使summary有active效果
             this.align_right = align_right; // 内容右对齐
             this.item_margin_lr = item_margin_lr; // 自定义左右缩进
+            this.compact_mode = compact_mode; // 紧凑模式，启用 min-height: 0 以支持滚动条
 
             this.tree_headers = [];
             this.tree_items = [];
@@ -7861,6 +7915,12 @@
             this.parent_element.insertAdjacentHTML("beforeend", html);
             this.details = this.parent_element.querySelector(":scope details.tree-widget:last-of-type");
             this.details.classList.add("hidden")
+
+            // 根据紧凑模式参数添加修饰类
+            if (this.compact_mode) {
+                this.details.classList.add("tree-widget-compact");
+            }
+
             this.summary = this.details.querySelector(":scope > summary");
             this.container_tree_headers = this.details.querySelector(":scope div.tree-headers");
             this.container_tree_items = this.details.querySelector(":scope ul");
@@ -14926,6 +14986,7 @@
                         });
 
                         // AI 咨询
+                        /*
                         if (dashboardwrappers.ChatDashboardWrapper.message_type_checker.is_text(this.msgattr.type)) {
                             items.push({
                                 type: "button",
@@ -14941,6 +15002,7 @@
                                 }
                             });
                         }
+                        */
 
                         // 编辑
                         if (this.sent_by_me && dashboardwrappers.ChatDashboardWrapper.message_type_checker.is_text(this.msgattr.type)) {
@@ -18248,7 +18310,7 @@
                         {text: "上次在线", width: 210,},
                         {text: "所属组", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
 
@@ -18575,7 +18637,7 @@
                         {text: "名称", width: 120,},
                         {text: "成员", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
                     this.fetch_list();
@@ -18828,7 +18890,7 @@
                         {text: "个人空间", width: 120,},
                         {text: "已使用", width: -1,},
                     ];
-                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this))
+                    this.tree1 = new TreeWidget(this.container, tree_headers, this.fill_tree_menu.bind(this), false, false, false, false, null, true)
                     this.tree1.show();
 
 
