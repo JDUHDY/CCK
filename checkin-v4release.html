@@ -2946,7 +2946,7 @@
 
         .aside-left {
             flex-grow: 1;
-            overflow: auto;
+            overflow: hidden;
 
             display: flex;
             flex-direction: column;
@@ -3048,6 +3048,11 @@
             padding: 4px;
             border-radius: 4px;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .theme-dark .aside-left > nav {
@@ -3060,6 +3065,28 @@
             padding: 0;
             margin: 0;
             border-radius: 4px;
+
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* 细滚动条样式 */
+        .nav-buttons::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .nav-buttons::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-buttons::-webkit-scrollbar-thumb {
+            background: rgb(139 139 139);
+            border-radius: 2px;
+        }
+
+        .nav-buttons::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* li 默认样式，无背景 */
@@ -3089,6 +3116,15 @@
             border: #2088ee 0 solid;
             border-radius: 2px;
             border-left-width: 4px;
+        }
+
+        /* 暗色主题 - 细滚动条 */
+        .theme-dark .nav-buttons::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-dark .nav-buttons::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
     </style>
