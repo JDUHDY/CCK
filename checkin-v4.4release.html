@@ -7465,13 +7465,13 @@
 
                 <label id="login-input-account-label">
                     账号：
-                    <input type="text" id="login-input-account">
+                    <input type="text" id="login-input-account" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="login-input-account">清空</button>
                 </label>
 
                 <label>
                     密码：
-                    <input type="text" id="login-input-password">
+                    <input type="text" id="login-input-password" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="login-input-password">清空</button>
                 </label>
 
@@ -7482,25 +7482,25 @@
             <div class="login-tab-content" id="register-tab-content">
                 <label>
                     账号：
-                    <input type="text" id="register-input-account">
+                    <input type="text" id="register-input-account" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="register-input-account">清空</button>
                 </label>
 
                 <label>
                     密码：
-                    <input type="text" id="register-input-password">
+                    <input type="text" id="register-input-password" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="register-input-password">清空</button>
                 </label>
 
                 <label>
                     确认：
-                    <input type="text" id="register-input-confirm-password">
+                    <input type="text" id="register-input-confirm-password" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="register-input-confirm-password">清空</button>
                 </label>
 
                 <label>
                     邀请码：
-                    <input type="text" id="register-input-invite-code">
+                    <input type="text" id="register-input-invite-code" autocomplete="off">
                     <button type="button" class="clear-input-btn" data-target="register-input-invite-code">清空</button>
                 </label>
 
@@ -7583,7 +7583,7 @@
                         好友
                     </button>
                     <button id="btn-create-group" class="social-button" style="display: none; flex: 1; padding: 6px; font-size: 12px; background: transparent; border: 1px solid #3498db; border-radius: 4px; cursor: pointer; color: #3498db; transition: all 0.2s;" onmouseover="this.style.background='#3498db'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#3498db'" data-permission="can_create_group">
-                        建群
+                        群组
                     </button>
                     <button id="btn-invite-to-group" class="social-button" style="display: none; flex: 1; padding: 6px; font-size: 12px; background: transparent; border: 1px solid #3498db; border-radius: 4px; cursor: pointer; color: #3498db; transition: all 0.2s;" onmouseover="this.style.background='#3498db'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#3498db'" data-permission="can_invite_to_group">
                         邀请
@@ -9469,7 +9469,7 @@
 
         async loadInviteCodes() {
             try {
-                const response = await fetch("/admin/api/invite_codes");
+                const response = await fetch(`${top_level_path}/admin/api/invite_codes`);
                 const codes = await response.json();
 
                 // 清空现有列表
@@ -9478,9 +9478,7 @@
                 // 添加邀请码到列表
                 if (Array.isArray(codes) && codes.length > 0) {
                     codes.forEach(codeRecord => {
-                        if (!codeRecord.is_used) {
-                            this.addInviteCodeItem(codeRecord.code, codeRecord.id);
-                        }
+                        this.addInviteCodeItem(codeRecord.code, codeRecord.id);
                     });
                 }
             } catch (error) {
@@ -9495,7 +9493,7 @@
                 generateBtn.disabled = true;
                 generateBtn.textContent = "生成中...";
 
-                const response = await fetch("/admin/api/generate_invite_code", {
+                const response = await fetch(`${top_level_path}/admin/api/generate_invite_code`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -9568,7 +9566,7 @@
             try {
                 if (id) {
                     // 从数据库删除
-                    const response = await fetch(`/admin/api/invite_codes/${id}`, {
+                    const response = await fetch(`${top_level_path}/admin/api/invite_codes/${id}`, {
                         method: "DELETE"
                     });
                     if (response.ok) {
@@ -25503,7 +25501,7 @@
                         }
 
                         try {
-                            const response = await fetch("/chat/api/add_friend", {
+                            const response = await fetch(`${top_level_path}/chat/api/add_friend`, {
                                 method: "POST",
                                 headers: {"Content-Type": "application/json"},
                                 body: JSON.stringify({target_uid: target_uid})
@@ -25542,7 +25540,7 @@
                         }
 
                         try {
-                            const response = await fetch("/chat/api/create_group", {
+                            const response = await fetch(`${top_level_path}/chat/api/create_group`, {
                                 method: "POST",
                                 headers: {"Content-Type": "application/json"},
                                 body: JSON.stringify({gid: gid})
@@ -25571,7 +25569,7 @@
                     // 获取用户所在的群组列表
                     let groups = [];
                     try {
-                        const response = await fetch("/chat/api/contacts");
+                        const response = await fetch(`${top_level_path}/chat/api/contacts`);
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
@@ -25616,7 +25614,7 @@
                         }
 
                         try {
-                            const response = await fetch("/chat/api/invite_to_group", {
+                            const response = await fetch(`${top_level_path}/chat/api/invite_to_group`, {
                                 method: "POST",
                                 headers: {"Content-Type": "application/json"},
                                 body: JSON.stringify({gid: gid, target_uid: target_uid})
