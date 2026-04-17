@@ -435,6 +435,7 @@
             padding: 4px;
             border-radius: 4px;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            overflow: auto;
         }
 
         .theme-dark .aside-left > nav {
@@ -1379,6 +1380,117 @@
             background-color: rgba(0, 123, 255, 0.4) !important;
         }
 
+        /* 网盘搜索框 */
+        .drive-search {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            max-width: 300px;
+            margin-left: auto;
+        }
+
+        .drive-search-input {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            background: #fff;
+            color: #333;
+        }
+
+        .drive-search-input:focus {
+            border-color: #007bff;
+        }
+
+        .drive-search-count {
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .theme-dark .drive-search-input {
+            background: #3d3d3d;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        .theme-dark .drive-search-input:focus {
+            border-color: #63b3ed;
+        }
+
+        .theme-dark .drive-search-count {
+            color: #aaa;
+        }
+
+        /* 网盘排序 */
+        .drive-sort {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .drive-sort-select {
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            background: #fff;
+            color: #333;
+        }
+
+        .drive-sort-select:focus {
+            border-color: #007bff;
+        }
+
+        .theme-dark .drive-sort-select {
+            background: #3d3d3d;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        .theme-dark .drive-sort-select:focus {
+            border-color: #63b3ed;
+        }
+
+        .drive-sort-order {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .drive-sort-order:hover {
+            background: #f5f5f5;
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .theme-dark .drive-sort-order {
+            background: #3d3d3d;
+            border-color: #555;
+            color: #aaa;
+        }
+
+        .theme-dark .drive-sort-order:hover {
+            background: #4a4a4a;
+            border-color: #63b3ed;
+            color: #63b3ed;
+        }
+
         .drive-items-wrap {
             display: flex;
             flex-direction: column;
@@ -1814,7 +1926,7 @@
         /* li 默认样式，无背景 */
         div.chat-contact {
             padding: 4px 4px;
-            margin: 4px 0;
+            margin: 2px 0;
             border-radius: 2px;
             cursor: pointer;
             transition: background-color 0.1s, transform 0.1s;
@@ -1822,6 +1934,7 @@
             display: flex;
             flex-direction: row;
             gap: 1px;
+            border: 2px solid #ddd;
         }
 
         /* 鼠标悬浮效果 */
@@ -1838,14 +1951,33 @@
         div.chat-contact.active {
             background-color: rgba(0, 123, 255, 0.2);
             font-weight: bold;
+            border: #449bf1 0 solid;
+            border-radius: 2px;
+            border-left-width: 4px;
+        }
+
+        /* 群聊/私聊分隔线 */
+        .chat-nav-divider {
+            height: 3px;
+            background: rgba(0, 159, 255, 0.4);
+            cursor: row-resize;
+            margin: 0px 6px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        /* 标题样式 */
+        .chat-contact-title {
+            color: var(--c-thick-blue2);
+        }
+            font-weight: bold;
             border: #2088ee 0 solid;
             border-radius: 2px;
             border-left-width: 4px;
         }
 
         span.chat-contact-online-status {
-            font-size: 20px;
-            align-self: flex-start;
+            font-size: 25px;
         }
 
         span.chat-contact-online-status[data-online-status="online"] {
@@ -1916,6 +2048,73 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            animation: badgeBreathing 2s ease-in-out infinite, badgeGlow 2s ease-in-out infinite;
+            box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+        }
+
+        @keyframes badgeBreathing {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes badgeGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(244, 67, 54, 0.5);
+            }
+        }
+
+        /* 搜索框样式 */
+        .chat-contact-type-private {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .chat-contact-type-private .chat-contact-title {
+            flex-shrink: 0;
+            margin: 8px 0 2px 0;
+            font-weight: 600;
+        }
+
+        .chat-contact-type-private .chat-contact-search {
+            flex: 1;
+            min-width: 0;
+            margin-top: 0;
+        }
+
+        .chat-contact-search {
+            background: rgba(94, 94, 94, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: #000;
+            padding: 4px 8px;
+            font-size: 13px;
+            border-radius: 4px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chat-contact-search::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .chat-contact-search:focus {
+            border-color: #2088ee;
+        }
+
+        .theme-dark .chat-contact-search {
+            background: rgba(94, 94, 94, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+        }
+
+        .theme-dark .chat-contact-search::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
     </style>
@@ -2116,7 +2315,7 @@
 
         .chat-session-inputarea-othertypes button {
             padding: 6px 10px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .chat-session-inputarea-othertypes-send {
@@ -3051,13 +3250,20 @@
     <section id="dashboard-chat">
         <div class="aside-left-wrap" style="width: 190px;">
             <aside class="aside-left tiny-scrollbar">
-                <nav>
-                    <p class="chat-contact-type">群聊：</p>
+                <nav id="chat-nav-groups" style="flex: none; max-height: 220px; min-height: 80px;">
+                    <div class="chat-contact-type-private">
+                        <p class="chat-contact-title">群聊：</p>
+                        <input type="text" class="chat-contact-search chat-contact-search-group" placeholder="搜索群聊...">
+                    </div>
                     <ol class="nav-buttons">
                     </ol>
                 </nav>
-                <nav>
-                    <p class="chat-contact-type">私聊：</p>
+                <div id="chat-nav-divider" class="chat-nav-divider"></div>
+                <nav id="chat-nav-users">
+                    <div class="chat-contact-type-private">
+                        <p class="chat-contact-title">私聊：</p>
+                        <input type="text" class="chat-contact-search chat-contact-search-private" placeholder="搜索私聊...">
+                    </div>
                     <ol class="nav-buttons">
                     </ol>
                 </nav>
@@ -6828,6 +7034,20 @@
     <button class="drive-action-btn hidden-btn" id="dab-batch-trash">移到垃圾桶</button>
     <button class="drive-action-btn hidden-btn" id="dab-batch-restore">移出垃圾桶</button>
     <button class="drive-action-btn hidden-btn" id="dab-batch-delete">永久删除</button>
+    <div class="drive-search">
+        <input type="text" class="drive-search-input" placeholder="搜索文件（支持正则）">
+        <span class="drive-search-count"></span>
+    </div>
+    <div class="drive-sort">
+        <select class="drive-sort-select" title="排序方式">
+            <option value="create_time">创建时间</option>
+            <option value="update_time">更新时间</option>
+            <option value="name">文件名称</option>
+            <option value="type">文件类型</option>
+            <option value="size">文件大小</option>
+        </select>
+        <button class="drive-sort-order" title="切换升序/降序">↑</button>
+    </div>
 </div>
 <div class="drive-items-wrap">
     <p class="hidden">此处没有文件。</p>
@@ -6842,6 +7062,28 @@
                 this.element_drive_items_wrap = this.drive_rect.querySelector(":scope div.drive-items-wrap");
                 this.element_drive_items_nothings_tip = this.drive_rect.querySelector(":scope div.drive-items-wrap > p");
                 this.element_drive_items = this.drive_rect.querySelector(":scope div.drive-items");
+
+                // 搜索框
+                this.drive_search_input = this.drive_actions.querySelector(":scope input.drive-search-input");
+                this.drive_search_count = this.drive_actions.querySelector(":scope span.drive-search-count");
+                this.drive_search_input.addEventListener("input", (event) => {
+                    this.filter_items();
+                });
+
+                // 排序控件
+                this.sort_field = "create_time";
+                this.sort_desc = true;
+                this.drive_sort_select = this.drive_actions.querySelector(":scope select.drive-sort-select");
+                this.drive_sort_order = this.drive_actions.querySelector(":scope button.drive-sort-order");
+                this.drive_sort_select.addEventListener("change", (event) => {
+                    this.sort_field = event.target.value;
+                    this.sort_items();
+                });
+                this.drive_sort_order.addEventListener("click", () => {
+                    this.sort_desc = !this.sort_desc;
+                    this.drive_sort_order.textContent = this.sort_desc ? "↓" : "↑";
+                    this.sort_items();
+                });
 
                 // 返回键
                 this.element_header_btn_close = this.drive_rect.querySelector(":scope button.drive-header-btn-close");
@@ -7147,6 +7389,8 @@
                         if (this.closed) return;
                         if (result.length === 0) this.element_drive_items_nothings_tip.classList.remove("hidden");
                         for (const resultElement of result) this.add_item(resultElement);
+                        // 加载完成后排序
+                        this.sort_items();
                         this.remove_loading_mark();
                     }).catch(error => {
                     if (this.closed) return;
@@ -7366,6 +7610,118 @@
 
             get_item_display_name(item) {
                 return item.attr.plain_name ? item.attr.plain_name : item.attr.name;
+            }
+
+            // 文件搜索过滤
+            filter_items() {
+                const keyword = this.drive_search_input.value.trim();
+                let visible_count = 0;
+                let has_regex_error = false;
+
+                if (keyword === "") {
+                    for (const item of this.drive_items) {
+                        item.summary.classList.remove("hidden");
+                        visible_count++;
+                    }
+                    this.drive_search_count.textContent = "";
+                    this.element_drive_items_nothings_tip.classList.add("hidden");
+                    return;
+                }
+
+                let regex = null;
+                try {
+                    regex = new RegExp(keyword, "i");
+                } catch (e) {
+                    has_regex_error = true;
+                }
+
+                for (const item of this.drive_items) {
+                    const name = this.get_item_display_name(item);
+                    
+                    if (has_regex_error) {
+                        if (name.includes(keyword)) {
+                            item.summary.classList.remove("hidden");
+                            visible_count++;
+                        } else {
+                            item.summary.classList.add("hidden");
+                        }
+                    } else {
+                        if (regex.test(name)) {
+                            item.summary.classList.remove("hidden");
+                            visible_count++;
+                        } else {
+                            item.summary.classList.add("hidden");
+                        }
+                    }
+                }
+
+                if (has_regex_error) {
+                    this.drive_search_count.textContent = `正则错误`;
+                    this.drive_search_count.style.color = "#dc3545";
+                } else {
+                    this.drive_search_count.textContent = `${visible_count}/${this.drive_items.length}`;
+                    this.drive_search_count.style.color = "";
+                }
+
+                if (visible_count === 0) {
+                    this.element_drive_items_nothings_tip.classList.remove("hidden");
+                } else {
+                    this.element_drive_items_nothings_tip.classList.add("hidden");
+                }
+            }
+
+            // 文件排序
+            sort_items() {
+                const field = this.sort_field;
+                const desc = this.sort_desc;
+
+                const compareFn = (a, b) => {
+                    let valA, valB;
+
+                    switch (field) {
+                        case "create_time":
+                            valA = a.attr.uploaded_time || 0;
+                            valB = b.attr.uploaded_time || 0;
+                            break;
+                        case "update_time":
+                            valA = a.attr.modified_time || a.attr.uploaded_time || 0;
+                            valB = b.attr.modified_time || b.attr.uploaded_time || 0;
+                            break;
+                        case "name":
+                            valA = this.get_item_display_name(a).toLowerCase();
+                            valB = this.get_item_display_name(b).toLowerCase();
+                            break;
+                        case "type":
+                            valA = a.attr.type === subviews.Drive.item_type.folder ? 0 : 1;
+                            valB = b.attr.type === subviews.Drive.item_type.folder ? 0 : 1;
+                            break;
+                        case "size":
+                            valA = a.attr.size || 0;
+                            valB = b.attr.size || 0;
+                            break;
+                        default:
+                            valA = a.attr.uploaded_time || 0;
+                            valB = b.attr.uploaded_time || 0;
+                    }
+
+                    let result;
+                    if (typeof valA === "string" && typeof valB === "string") {
+                        result = valA.localeCompare(valB, "zh-CN");
+                    } else {
+                        result = valA - valB;
+                    }
+
+                    return desc ? -result : result;
+                };
+
+                this.drive_items.sort(compareFn);
+
+                const container = this.element_drive_items;
+                for (const item of this.drive_items) {
+                    if (item.details && container.contains(item.details)) {
+                        container.appendChild(item.details);
+                    }
+                }
             }
 
             remove_all_items() {
@@ -12544,6 +12900,10 @@
                 this.ws_action_count = 0;     // 当前连接已发送的请求次数
                 this.max_ws_requests = 100;   // 触发重连的安全阈值
 
+                // 初始化搜索功能
+                this.init_contact_search();
+                // 初始化分隔线拖动
+                this.init_nav_divider();
             }
 
             leave() {
@@ -12572,6 +12932,7 @@
                     const ol = this.dashboard_element.mainactions[0].ol;
                     lis.push(mainaction);
                     this.add_contact_item_(mainaction, ol,);
+                    this.sort_contact_items(lis, ol);
                 } else if (attr.type === subviews.Chat.receiver_type.user) {
                     const mainaction = {text: attr.uid, pagetype: contentpages.dashboard_chat.user,};
                     mainaction.contact_attr = attr;
@@ -12586,6 +12947,7 @@
                     const ol = this.dashboard_element.mainactions[1].ol;
                     lis.push(mainaction);
                     this.add_contact_item_(mainaction, ol,);
+                    this.sort_contact_items(lis, ol);
                 }
             }
 
@@ -12593,7 +12955,7 @@
                 let html = `
 <div class="chat-contact">
 
-<span class="chat-contact-online-status">●</span>
+<span class="chat-contact-online-status">◉</span>
 
 <div class="chat-contact-session-status">
     <div class="chat-contact-session-status-top">
@@ -12624,6 +12986,139 @@
                 mainaction.e_ssb_lastmsgview = li.querySelector(":scope .chat-contact-session-status-bottom-lastmsgview");
                 mainaction.e_ssb_unreadcount = li.querySelector(":scope .chat-contact-session-status-bottom-unreadcount");
 
+            }
+
+            // 排序会话列表：未读 > 在线 > 离线
+            sort_contact_items(lis, ol) {
+                // 检查未读状态
+                const isUnread = (item) => {
+                    return item.status_attr && item.status_attr.unread_count > 0;
+                };
+
+                // 检查在线状态
+                const isOnline = (item) => {
+                    if (!item.status_attr) return false;
+                    if (item.status_attr.type === subviews.Chat.receiver_type.group) {
+                        return item.status_attr.online_count > 0;
+                    } else if (item.status_attr.type === subviews.Chat.receiver_type.user) {
+                        return item.status_attr.online_status === ChatDashboardWrapper.online_status.online;
+                    }
+                    return false;
+                };
+
+                // 分组：未读、在线、离线
+                const unread = [];
+                const online = [];
+                const offline = [];
+
+                lis.forEach(item => {
+                    if (isUnread(item)) {
+                        unread.push(item);
+                    } else if (isOnline(item)) {
+                        online.push(item);
+                    } else {
+                        offline.push(item);
+                    }
+                });
+
+                // 每组内按最后消息时间倒序排序
+                const sortByTime = (a, b) => {
+                    const aTime = a.status_attr?.last_message_time || 0;
+                    const bTime = b.status_attr?.last_message_time || 0;
+                    return bTime - aTime;
+                };
+                unread.sort(sortByTime);
+                online.sort(sortByTime);
+                offline.sort(sortByTime);
+
+                // 合并所有组
+                const sortedItems = [...unread, ...online, ...offline];
+
+                // 重新排列 DOM 元素
+                sortedItems.forEach(item => {
+                    if (item.element) {
+                        ol.appendChild(item.element);
+                    }
+                });
+
+                return sortedItems;
+            }
+
+            // 重新排序所有联系人
+            resort_contact_items() {
+                for (let i = 0; i < 2; i++) {
+                    const mainaction_group = this.dashboard_element.mainactions[i];
+                    const lis = mainaction_group.lis;
+                    const ol = mainaction_group.ol;
+                    mainaction_group.lis = this.sort_contact_items(lis, ol);
+                }
+            }
+
+            // 初始化搜索功能
+            init_contact_search() {
+                const groupSearchInput = this.dashboard_element.querySelector(".chat-contact-search-group");
+                const privateSearchInput = this.dashboard_element.querySelector(".chat-contact-search-private");
+
+                if (groupSearchInput) {
+                    groupSearchInput.addEventListener("input", () => {
+                        const keyword = groupSearchInput.value.trim().toLowerCase();
+                        const ol = this.dashboard_element.mainactions[0].ol;
+                        ol.querySelectorAll(".chat-contact").forEach(li => {
+                            const nameEl = li.querySelector(".chat-contact-session-status-top-name");
+                            const name = nameEl ? nameEl.textContent.toLowerCase() : "";
+                            li.style.display = !keyword || name.includes(keyword) ? "" : "none";
+                        });
+                    });
+                }
+
+                if (privateSearchInput) {
+                    privateSearchInput.addEventListener("input", () => {
+                        const keyword = privateSearchInput.value.trim().toLowerCase();
+                        const ol = this.dashboard_element.mainactions[1].ol;
+                        ol.querySelectorAll(".chat-contact").forEach(li => {
+                            const nameEl = li.querySelector(".chat-contact-session-status-top-name");
+                            const name = nameEl ? nameEl.textContent.toLowerCase() : "";
+                            li.style.display = !keyword || name.includes(keyword) ? "" : "none";
+                        });
+                    });
+                }
+            }
+
+            // 初始化群聊/私聊分隔符拖动
+            init_nav_divider() {
+                const divider = document.getElementById("chat-nav-divider");
+                const groupsNav = document.getElementById("chat-nav-groups");
+                const usersNav = document.getElementById("chat-nav-users");
+                if (!divider || !groupsNav || !usersNav) return;
+
+                let isDragging = false;
+                let startY = 0;
+                let startHeight = 0;
+
+                divider.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+                    startY = e.clientY;
+                    startHeight = groupsNav.offsetHeight;
+                    document.body.style.cursor = "row-resize";
+                    document.body.style.userSelect = "none";
+                });
+
+                document.addEventListener("mousemove", (e) => {
+                    if (!isDragging) return;
+                    const deltaY = e.clientY - startY;
+                    const newHeight = Math.max(80, startHeight + deltaY);
+                    groupsNav.style.height = newHeight + "px";
+                    groupsNav.style.maxHeight = "none";
+                });
+
+                document.addEventListener("mouseup", () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = "";
+                        document.body.style.userSelect = "";
+                    }
+                });
             }
 
             static is_group(contact_attr) {
@@ -12700,6 +13195,8 @@
 
                 }
 
+                // 重新排序联系人列表
+                this.resort_contact_items();
             }
 
             sync_edited_messages(item, former_ceid, status_attr, message_ids) {
