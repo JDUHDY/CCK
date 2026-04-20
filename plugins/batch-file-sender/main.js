@@ -114,7 +114,6 @@ class BatchFileSenderPlugin {
         document.body.appendChild(this.overlay);
 
         this.refs.panel = this.overlay.querySelector('.bfs-panel');
-        this.refs.dropZone = this.overlay.querySelector('.bfs-drop-zone');
         this.refs.folderInput = this.overlay.querySelector('#bfs-folder-input');
         this.refs.rows = this.overlay.querySelector('#bfs-rows');
         this.refs.empty = this.overlay.querySelector('#bfs-empty');
@@ -139,10 +138,6 @@ class BatchFileSenderPlugin {
         });
 
         this.overlay.querySelector('#bfs-close-btn').addEventListener('click', () => {
-            this.closePanel();
-        });
-
-        this.overlay.querySelector('#bfs-close-icon').addEventListener('click', () => {
             this.closePanel();
         });
 
@@ -965,7 +960,7 @@ class BatchFileSenderPlugin {
                 </div>
 
                 <div class="bfs-rows" id="bfs-rows"></div>
-                <div class="bfs-empty" id="bfs-empty" style="display:none; margin: 10px 14px;">暂无待发送联系人，将总文件夹导入/拖拽到此面板，自动识别目录下的联系人。</div>
+                <div class="bfs-empty" id="bfs-empty" style="display:block; margin: 10px 14px;">暂无待发送联系人，将总文件夹导入/拖拽到此面板，自动识别目录下的联系人。</div>
 
                 <footer class="bfs-foot">
                     <span id="bfs-contact-mode">正在读取联系人权限...</span>
